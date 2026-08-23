@@ -2,6 +2,7 @@ package dev.thou.craftnotify.block;
 
 import com.mojang.serialization.MapCodec;
 import dev.thou.craftnotify.blockentity.NotifierBlockEntity;
+import dev.thou.craftnotify.preset.GuiPresetStore;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -14,23 +15,31 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
 public final class NotifierBlock extends BaseEntityBlock {
     public static final MapCodec<NotifierBlock> CODEC = simpleCodec(NotifierBlock::new);
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
+    public static final BooleanProperty SENDING = BooleanProperty.create("sending");
+    public static final IntegerProperty ENERGY = IntegerProperty.create("energy", 0, 4);
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
 
     public NotifierBlock(Properties properties) {
         super(properties);
-        registerDefaultState(stateDefinition.any().setValue(POWERED, false).setValue(FACING, Direction.NORTH));
+        registerDefaultState(stateDefinition.any()
+                .setValue(POWERED, false)
+                .setValue(SENDING, false)
+                .setValue(ENERGY, 0)
+                .setValue(FACING, Direction.NORTH));
     }
 
     @Override
@@ -40,7 +49,7 @@ public final class NotifierBlock extends BaseEntityBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<net.minecraft.world.level.block.Block, BlockState> builder) {
-        builder.add(POWERED, FACING);
+        builder.add(POWERED, SENDING, ENERGY, FACING);
     }
 
     @Nullable
@@ -57,6 +66,16 @@ public final class NotifierBlock extends BaseEntityBlock {
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new NotifierBlockEntity(pos, state);
+    }
+
+    @Override
+    protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+        if (level.getBlockEntity(pos) instanceof NotifierBlockEntity notifier) {
+            notifier.serverTick(level);
+            if (notifier.shouldKeepTicking()) {
+                level.scheduleTick(pos, this, 1);
+            }
+        }
     }
 
     @Override
@@ -126,6 +145,7 @@ public final class NotifierBlock extends BaseEntityBlock {
                 buf.writeVarInt(notifier.energyStored());
                 buf.writeVarInt(notifier.energyCapacity());
                 buf.writeBoolean(notifier.hasCompleteAntenna());
+                GuiPresetStore.catalog().write(buf);
             });
         }
         return InteractionResult.sidedSuccess(level.isClientSide());
@@ -146,5 +166,15 @@ public final class NotifierBlock extends BaseEntityBlock {
     @Override
     protected boolean isSignalSource(BlockState state) {
         return false;
+    }
+
+    @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        if (!state.is(newState.getBlock())
+                && !level.isClientSide()
+                && level.getBlockEntity(pos) instanceof NotifierBlockEntity notifier) {
+            notifier.clearAntennaTransmitting();
+        }
+        super.onRemove(state, level, pos, newState, movedByPiston);
     }
 }

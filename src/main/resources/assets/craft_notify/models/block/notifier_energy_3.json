@@ -1,0 +1,98 @@
+{
+  "textures": {
+    "on": "craft_notify:block/terminal_energy_on",
+    "particle": "craft_notify:block/terminal_energy_on"
+  },
+  "elements": [
+    {
+      "from": [
+        3.15,
+        2.25,
+        -0.55
+      ],
+      "to": [
+        4.85,
+        3.95,
+        0.25
+      ],
+      "faces": {
+        "north": {
+          "texture": "#on"
+        },
+        "up": {
+          "texture": "#on"
+        },
+        "down": {
+          "texture": "#on"
+        },
+        "west": {
+          "texture": "#on"
+        },
+        "east": {
+          "texture": "#on"
+        }
+      },
+      "shade": false
+    },
+    {
+      "from": [
+        6.15,
+        2.25,
+        -0.55
+      ],
+      "to": [
+        7.8500000000000005,
+        3.95,
+        0.25
+      ],
+      "faces": {
+        "north": {
+          "texture": "#on"
+        },
+        "up": {
+          "texture": "#on"
+        },
+        "down": {
+          "texture": "#on"
+        },
+        "west": {
+          "texture": "#on"
+        },
+        "east": {
+          "texture": "#on"
+        }
+      },
+      "shade": false
+    },
+    {
+      "from": [
+        9.15,
+        2.25,
+        -0.55
+      ],
+      "to": [
+        10.85,
+        3.95,
+        0.25
+      ],
+      "faces": {
+        "north": {
+          "texture": "#on"
+        },
+        "up": {
+          "texture": "#on"
+        },
+        "down": {
+          "texture": "#on"
+        },
+        "west": {
+          "texture": "#on"
+        },
+        "east": {
+          "texture": "#on"
+        }
+      },
+      "shade": false
+    }
+  ]
+}

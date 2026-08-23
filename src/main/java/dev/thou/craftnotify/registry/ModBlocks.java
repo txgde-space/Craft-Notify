@@ -27,6 +27,18 @@ public final class ModBlocks {
                     .strength(3.0F, 6.0F)
                     .sound(SoundType.COPPER)
                     .requiresCorrectToolForDrops()
+                    .lightLevel(state -> {
+                        if (state.hasProperty(NotifierBlock.SENDING) && state.getValue(NotifierBlock.SENDING)) {
+                            return 7;
+                        }
+                        if (state.hasProperty(NotifierBlock.POWERED) && state.getValue(NotifierBlock.POWERED)) {
+                            return 4;
+                        }
+                        if (state.hasProperty(NotifierBlock.ENERGY) && state.getValue(NotifierBlock.ENERGY) >= 3) {
+                            return 2;
+                        }
+                        return 0;
+                    })
     );
 
     public static final DeferredItem<BlockItem> NOTIFIER_ITEM =
@@ -41,6 +53,8 @@ public final class ModBlocks {
                     .sound(SoundType.COPPER)
                     .requiresCorrectToolForDrops()
                     .noOcclusion()
+                    .lightLevel(state -> state.hasProperty(AntennaBlock.TRANSMITTING)
+                            && state.getValue(AntennaBlock.TRANSMITTING) ? 8 : 0)
     );
 
     public static final DeferredItem<BlockItem> ANTENNA_ITEM =

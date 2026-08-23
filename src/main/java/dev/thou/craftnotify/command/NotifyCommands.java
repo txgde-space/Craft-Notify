@@ -6,6 +6,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import dev.thou.craftnotify.blockentity.NotifierBlockEntity;
 import dev.thou.craftnotify.notification.SecretChannelStore;
 import dev.thou.craftnotify.notification.WebhookCallbackServer;
+import dev.thou.craftnotify.preset.GuiPresetStore;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
@@ -53,9 +54,10 @@ public final class NotifyCommands {
                         .requires(source -> source.hasPermission(2))
                         .executes(context -> {
                             SecretChannelStore.reload();
+                            GuiPresetStore.reload();
                             WebhookCallbackServer.reload();
                             context.getSource().sendSuccess(
-                                    () -> Component.literal("Craft Notify channels reloaded"), true);
+                                    () -> Component.literal("Craft Notify channels and GUI presets reloaded"), true);
                             return 1;
                         }))
                 .then(configure));

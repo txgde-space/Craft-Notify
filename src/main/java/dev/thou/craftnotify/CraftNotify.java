@@ -5,6 +5,7 @@ import dev.thou.craftnotify.command.NotifyCommands;
 import dev.thou.craftnotify.notification.NotificationDispatcher;
 import dev.thou.craftnotify.notification.SecretChannelStore;
 import dev.thou.craftnotify.notification.WebhookCallbackServer;
+import dev.thou.craftnotify.preset.GuiPresetStore;
 import dev.thou.craftnotify.network.ModNetworking;
 import dev.thou.craftnotify.registry.ModBlockEntities;
 import dev.thou.craftnotify.registry.ModBlocks;
@@ -74,6 +75,7 @@ public final class CraftNotify {
     @SubscribeEvent
     public void serverStarting(ServerStartingEvent event) {
         SecretChannelStore.reload();
+        GuiPresetStore.reload();
         NotificationDispatcher.start();
         WebhookCallbackServer.reload();
     }

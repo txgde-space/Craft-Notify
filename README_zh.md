@@ -59,6 +59,12 @@ config/craft-notify-channels.properties
 /notify reload
 ```
 
+设备名称、标题、正文、冷却等下拉选项在：
+
+```text
+config/craft-notify-presets.json
+```
+
 > [!WARNING]
 > 通知凭据属于服务端秘密。不要把真实密钥发给玩家、写进终端消息或提交到代码仓库；推荐通过环境变量读取。
 
@@ -85,18 +91,22 @@ config/craft-notify-channels.properties
 
 ### 夸父通信终端
 
+铜质机身、末影远程传讯，加上侦测器捕捉红石边沿：
+
 ```text
-铜锭  红石      铜锭
-石英  侦测器    石英
-铁锭  红石火把  铁锭
+铜锭      避雷针    铜锭
+末影珍珠  侦测器    末影珍珠
+铜锭      铜块      铜锭
 ```
 
 ### 夸父通信天线
 
+紫水晶天线尖、避雷针桅杆、铜块底座：
+
 ```text
 空    紫水晶碎片  空
-铜锭  红石火把    铜锭
-铜锭  铁锭        铜锭
+铜锭  避雷针      铜锭
+铜锭  铜块        铜锭
 ```
 
 ## 使用方法
@@ -218,7 +228,7 @@ Content-Type: application/json
 | 命令 | 权限 | 作用 |
 | --- | --- | --- |
 | `/notify channels` | 所有人 | 查看服务端已加载的通道 ID |
-| `/notify reload` | OP 2 | 重新加载通道配置和回调监听器 |
+| `/notify reload` | OP 2 | 重新加载通道配置、GUI 选项和回调监听器 |
 | `/notify configure ...` | OP 2 | 不使用 GUI，直接配置指定坐标的终端 |
 
 示例：

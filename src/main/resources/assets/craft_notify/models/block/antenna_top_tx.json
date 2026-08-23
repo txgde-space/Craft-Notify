@@ -1,0 +1,141 @@
+{
+  "textures": {
+    "glow": "craft_notify:block/antenna_glow_send",
+    "crystal": "craft_notify:block/antenna_crystal_send",
+    "particle": "craft_notify:block/antenna_glow_send"
+  },
+  "elements": [
+    {
+      "from": [
+        5.7,
+        9.2,
+        5.7
+      ],
+      "to": [
+        10.3,
+        13.3,
+        10.3
+      ],
+      "faces": {
+        "down": {
+          "texture": "#crystal"
+        },
+        "up": {
+          "texture": "#crystal"
+        },
+        "north": {
+          "texture": "#crystal"
+        },
+        "south": {
+          "texture": "#crystal"
+        },
+        "west": {
+          "texture": "#crystal"
+        },
+        "east": {
+          "texture": "#crystal"
+        }
+      },
+      "shade": false
+    },
+    {
+      "from": [
+        6.2,
+        13,
+        6.2
+      ],
+      "to": [
+        9.8,
+        16.2,
+        9.8
+      ],
+      "faces": {
+        "down": {
+          "texture": "#crystal"
+        },
+        "up": {
+          "texture": "#crystal"
+        },
+        "north": {
+          "texture": "#crystal"
+        },
+        "south": {
+          "texture": "#crystal"
+        },
+        "west": {
+          "texture": "#crystal"
+        },
+        "east": {
+          "texture": "#crystal"
+        }
+      },
+      "shade": false
+    },
+    {
+      "from": [
+        4,
+        8.5,
+        4
+      ],
+      "to": [
+        12,
+        11.5,
+        12
+      ],
+      "faces": {
+        "down": {
+          "texture": "#glow"
+        },
+        "up": {
+          "texture": "#glow"
+        },
+        "north": {
+          "texture": "#glow"
+        },
+        "south": {
+          "texture": "#glow"
+        },
+        "west": {
+          "texture": "#glow"
+        },
+        "east": {
+          "texture": "#glow"
+        }
+      },
+      "shade": false
+    },
+    {
+      "from": [
+        7.1,
+        16.4,
+        7.1
+      ],
+      "to": [
+        8.9,
+        18.2,
+        8.9
+      ],
+      "faces": {
+        "down": {
+          "texture": "#glow"
+        },
+        "up": {
+          "texture": "#glow"
+        },
+        "north": {
+          "texture": "#glow"
+        },
+        "south": {
+          "texture": "#glow"
+        },
+        "west": {
+          "texture": "#glow"
+        },
+        "east": {
+          "texture": "#glow"
+        }
+      },
+      "shade": false
+    }
+  ]
+}

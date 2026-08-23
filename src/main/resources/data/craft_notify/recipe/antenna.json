@@ -3,14 +3,14 @@
   "category": "redstone",
   "pattern": [
     " A ",
-    "CRC",
-    "CIC"
+    "CLC",
+    "CBC"
   ],
   "key": {
     "A": { "item": "minecraft:amethyst_shard" },
     "C": { "item": "minecraft:copper_ingot" },
-    "R": { "item": "minecraft:redstone_torch" },
-    "I": { "item": "minecraft:iron_ingot" }
+    "L": { "item": "minecraft:lightning_rod" },
+    "B": { "item": "minecraft:copper_block" }
   },
   "result": {
     "id": "craft_notify:antenna",

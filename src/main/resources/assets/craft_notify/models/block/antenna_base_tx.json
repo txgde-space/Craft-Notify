@@ -1,0 +1,74 @@
+{
+  "textures": {
+    "glow": "craft_notify:block/antenna_glow_send",
+    "particle": "craft_notify:block/antenna_glow_send"
+  },
+  "elements": [
+    {
+      "from": [
+        4.2,
+        4.2,
+        4.2
+      ],
+      "to": [
+        11.8,
+        6.3,
+        11.8
+      ],
+      "faces": {
+        "down": {
+          "texture": "#glow"
+        },
+        "up": {
+          "texture": "#glow"
+        },
+        "north": {
+          "texture": "#glow"
+        },
+        "south": {
+          "texture": "#glow"
+        },
+        "west": {
+          "texture": "#glow"
+        },
+        "east": {
+          "texture": "#glow"
+        }
+      },
+      "shade": false
+    },
+    {
+      "from": [
+        4.2,
+        7.2,
+        4.2
+      ],
+      "to": [
+        11.8,
+        9.3,
+        11.8
+      ],
+      "faces": {
+        "down": {
+          "texture": "#glow"
+        },
+        "up": {
+          "texture": "#glow"
+        },
+        "north": {
+          "texture": "#glow"
+        },
+        "south": {
+          "texture": "#glow"
+        },
+        "west": {
+          "texture": "#glow"
+        },
+        "east": {
+          "texture": "#glow"
+        }
+      },
+      "shade": false
+    }
+  ]
+}

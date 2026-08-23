@@ -53,10 +53,16 @@ All HTTP requests run asynchronously and do not block the Minecraft server tick 
 config/craft-notify-channels.properties
 ```
 
-Reload notification profiles without restarting the server:
+Reload notification profiles and GUI dropdown presets without restarting the server:
 
 ```text
 /notify reload
+```
+
+Edit dropdown options (device names, titles, bodies, cooldowns) in:
+
+```text
+config/craft-notify-presets.json
 ```
 
 > [!WARNING]
@@ -85,18 +91,22 @@ The terminal sends only when the antenna is complete, enough energy is available
 
 ### Craft Notify Terminal
 
+Copper chassis, ender-range signalling, and an observer that watches the redstone edge:
+
 ```text
-Copper Ingot   Redstone         Copper Ingot
-Quartz         Observer         Quartz
-Iron Ingot     Redstone Torch   Iron Ingot
+Copper Ingot   Lightning Rod    Copper Ingot
+Ender Pearl    Observer         Ender Pearl
+Copper Ingot   Copper Block     Copper Ingot
 ```
 
 ### Craft Notify Antenna
 
+Amethyst crystal, a lightning-rod mast, and a copper base:
+
 ```text
 Empty          Amethyst Shard   Empty
-Copper Ingot   Redstone Torch   Copper Ingot
-Copper Ingot   Iron Ingot       Copper Ingot
+Copper Ingot   Lightning Rod    Copper Ingot
+Copper Ingot   Copper Block     Copper Ingot
 ```
 
 ## Usage
@@ -218,7 +228,7 @@ The safe default binds only to `127.0.0.1`. For public access, use an HTTPS reve
 | Command | Permission | Purpose |
 | --- | --- | --- |
 | `/notify channels` | Everyone | List loaded channel IDs |
-| `/notify reload` | OP level 2 | Reload profiles and callback listeners |
+| `/notify reload` | OP level 2 | Reload profiles, GUI presets, and callback listeners |
 | `/notify configure ...` | OP level 2 | Configure a terminal at a position without using the GUI |
 
 Example:

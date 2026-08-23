@@ -1,12 +1,273 @@
 {
-  "variants": {
-    "facing=north,powered=false": { "model": "craft_notify:block/notifier" },
-    "facing=east,powered=false": { "model": "craft_notify:block/notifier", "y": 90 },
-    "facing=south,powered=false": { "model": "craft_notify:block/notifier", "y": 180 },
-    "facing=west,powered=false": { "model": "craft_notify:block/notifier", "y": 270 },
-    "facing=north,powered=true": { "model": "craft_notify:block/notifier_powered" },
-    "facing=east,powered=true": { "model": "craft_notify:block/notifier_powered", "y": 90 },
-    "facing=south,powered=true": { "model": "craft_notify:block/notifier_powered", "y": 180 },
-    "facing=west,powered=true": { "model": "craft_notify:block/notifier_powered", "y": 270 }
-  }
+  "multipart": [
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "model": "craft_notify:block/notifier"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "powered": "true"
+      },
+      "apply": {
+        "model": "craft_notify:block/notifier_powered"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "sending": "true"
+      },
+      "apply": {
+        "model": "craft_notify:block/notifier_sending"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "energy": "1"
+      },
+      "apply": {
+        "model": "craft_notify:block/notifier_energy_1"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "energy": "2"
+      },
+      "apply": {
+        "model": "craft_notify:block/notifier_energy_2"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "energy": "3"
+      },
+      "apply": {
+        "model": "craft_notify:block/notifier_energy_3"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "energy": "4"
+      },
+      "apply": {
+        "model": "craft_notify:block/notifier_energy_4"
+      }
+    },
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "model": "craft_notify:block/notifier",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "powered": "true"
+      },
+      "apply": {
+        "model": "craft_notify:block/notifier_powered",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "sending": "true"
+      },
+      "apply": {
+        "model": "craft_notify:block/notifier_sending",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "energy": "1"
+      },
+      "apply": {
+        "model": "craft_notify:block/notifier_energy_1",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "energy": "2"
+      },
+      "apply": {
+        "model": "craft_notify:block/notifier_energy_2",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "energy": "3"
+      },
+      "apply": {
+        "model": "craft_notify:block/notifier_energy_3",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "energy": "4"
+      },
+      "apply": {
+        "model": "craft_notify:block/notifier_energy_4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south"
+      },
+      "apply": {
+        "model": "craft_notify:block/notifier",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "powered": "true"
+      },
+      "apply": {
+        "model": "craft_notify:block/notifier_powered",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "sending": "true"
+      },
+      "apply": {
+        "model": "craft_notify:block/notifier_sending",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "energy": "1"
+      },
+      "apply": {
+        "model": "craft_notify:block/notifier_energy_1",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "energy": "2"
+      },
+      "apply": {
+        "model": "craft_notify:block/notifier_energy_2",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "energy": "3"
+      },
+      "apply": {
+        "model": "craft_notify:block/notifier_energy_3",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "energy": "4"
+      },
+      "apply": {
+        "model": "craft_notify:block/notifier_energy_4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west"
+      },
+      "apply": {
+        "model": "craft_notify:block/notifier",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "powered": "true"
+      },
+      "apply": {
+        "model": "craft_notify:block/notifier_powered",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "sending": "true"
+      },
+      "apply": {
+        "model": "craft_notify:block/notifier_sending",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "energy": "1"
+      },
+      "apply": {
+        "model": "craft_notify:block/notifier_energy_1",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "energy": "2"
+      },
+      "apply": {
+        "model": "craft_notify:block/notifier_energy_2",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "energy": "3"
+      },
+      "apply": {
+        "model": "craft_notify:block/notifier_energy_3",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "energy": "4"
+      },
+      "apply": {
+        "model": "craft_notify:block/notifier_energy_4",
+        "y": 270
+      }
+    }
+  ]
 }

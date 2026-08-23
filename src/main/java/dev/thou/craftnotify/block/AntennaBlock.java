@@ -13,6 +13,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -22,21 +23,30 @@ import org.jetbrains.annotations.Nullable;
 public final class AntennaBlock extends Block {
     public static final MapCodec<AntennaBlock> CODEC = simpleCodec(AntennaBlock::new);
     public static final EnumProperty<AntennaPart> PART = EnumProperty.create("part", AntennaPart.class);
+    public static final BooleanProperty TRANSMITTING = BooleanProperty.create("transmitting");
 
     private static final VoxelShape BASE_SHAPE = Shapes.or(
-            box(2, 0, 2, 14, 3, 14),
-            box(6, 3, 6, 10, 16, 10)
+            box(1, 0, 1, 15, 3, 15),
+            box(5.5, 3, 5.5, 10.5, 11, 10.5),
+            box(6.5, 11, 6.5, 9.5, 16, 9.5)
     );
-    private static final VoxelShape MIDDLE_SHAPE = box(6, 0, 6, 10, 16, 10);
+    private static final VoxelShape MIDDLE_SHAPE = Shapes.or(
+            box(6.5, 0, 6.5, 9.5, 16, 9.5),
+            box(1, 7.2, 7, 15, 8.8, 9),
+            box(7, 7.2, 1, 9, 8.8, 15)
+    );
     private static final VoxelShape TOP_SHAPE = Shapes.or(
-            box(6, 0, 6, 10, 12, 10),
-            box(3, 10, 3, 13, 14, 13),
-            box(7, 14, 7, 9, 16, 9)
+            box(6.5, 0, 6.5, 9.5, 9, 9.5),
+            box(0.5, 8, 7, 15.5, 10, 9),
+            box(7, 8, 0.5, 9, 10, 15.5),
+            box(6, 9.5, 6, 10, 16, 10)
     );
 
     public AntennaBlock(Properties properties) {
         super(properties);
-        registerDefaultState(stateDefinition.any().setValue(PART, AntennaPart.BASE));
+        registerDefaultState(stateDefinition.any()
+                .setValue(PART, AntennaPart.BASE)
+                .setValue(TRANSMITTING, false));
     }
 
     @Override
@@ -46,7 +56,7 @@ public final class AntennaBlock extends Block {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(PART);
+        builder.add(PART, TRANSMITTING);
     }
 
     @Nullable

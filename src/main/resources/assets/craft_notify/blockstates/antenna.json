@@ -1,7 +1,55 @@
 {
-  "variants": {
-    "part=base": { "model": "craft_notify:block/antenna_base" },
-    "part=middle": { "model": "craft_notify:block/antenna_middle" },
-    "part=top": { "model": "craft_notify:block/antenna_top" }
-  }
+  "multipart": [
+    {
+      "when": {
+        "part": "base"
+      },
+      "apply": {
+        "model": "craft_notify:block/antenna_base"
+      }
+    },
+    {
+      "when": {
+        "part": "middle"
+      },
+      "apply": {
+        "model": "craft_notify:block/antenna_middle"
+      }
+    },
+    {
+      "when": {
+        "part": "top"
+      },
+      "apply": {
+        "model": "craft_notify:block/antenna_top"
+      }
+    },
+    {
+      "when": {
+        "part": "base",
+        "transmitting": "true"
+      },
+      "apply": {
+        "model": "craft_notify:block/antenna_base_tx"
+      }
+    },
+    {
+      "when": {
+        "part": "middle",
+        "transmitting": "true"
+      },
+      "apply": {
+        "model": "craft_notify:block/antenna_middle_tx"
+      }
+    },
+    {
+      "when": {
+        "part": "top",
+        "transmitting": "true"
+      },
+      "apply": {
+        "model": "craft_notify:block/antenna_top_tx"
+      }
+    }
+  ]
 }

@@ -1,0 +1,38 @@
+{
+  "textures": {
+    "on": "craft_notify:block/terminal_energy_on",
+    "particle": "craft_notify:block/terminal_energy_on"
+  },
+  "elements": [
+    {
+      "from": [
+        3.15,
+        2.25,
+        -0.55
+      ],
+      "to": [
+        4.85,
+        3.95,
+        0.25
+      ],
+      "faces": {
+        "north": {
+          "texture": "#on"
+        },
+        "up": {
+          "texture": "#on"
+        },
+        "down": {
+          "texture": "#on"
+        },
+        "west": {
+          "texture": "#on"
+        },
+        "east": {
+          "texture": "#on"
+        }
+      },
+      "shade": false
+    }
+  ]
+}

@@ -1,146 +1,267 @@
 package dev.thou.craftnotify.client.screen;
 
+import dev.thou.craftnotify.CraftNotify;
 import dev.thou.craftnotify.blockentity.NotifierBlockEntity;
 import dev.thou.craftnotify.menu.NotifierMenu;
 import dev.thou.craftnotify.network.TestNotifierPayload;
 import dev.thou.craftnotify.network.UpdateNotifierPayload;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.components.MultiLineEditBox;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.neoforged.neoforge.network.PacketDistributor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public final class NotifierScreen extends AbstractContainerScreen<NotifierMenu> {
-    private EditBox labelInput;
-    private EditBox channelInput;
-    private EditBox titleInput;
-    private MultiLineEditBox contentInput;
-    private EditBox cooldownInput;
+    private static final ResourceLocation TEXTURE = CraftNotify.id("textures/gui/notifier.png");
+    private static final int ENERGY_X = 8;
+    private static final int ENERGY_Y = 19;
+    private static final int ENERGY_W = 12;
+    private static final int ENERGY_H = 72;
+    private static final int LAMP_X = 9;
+    private static final int ANTENNA_Y = 101;
+    private static final int STATUS_Y = 119;
+    private static final int LAMP_SIZE = 12;
+    private static final int PREVIEW_X = 28;
+    private static final int PREVIEW_Y = 132;
+    private static final int PREVIEW_W = 202;
+
+    private final List<DropdownWidget<?>> dropdowns = new ArrayList<>();
+    private DropdownWidget<TerminalPresets.DeviceOption> deviceButton;
+    private DropdownWidget<String> channelButton;
+    private DropdownWidget<TerminalPresets.TemplateOption> titleButton;
+    private DropdownWidget<TerminalPresets.TemplateOption> messageButton;
+    private DropdownWidget<Integer> cooldownButton;
 
     public NotifierScreen(NotifierMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
-        imageWidth = 332;
-        imageHeight = 260;
-        titleLabelX = 12;
-        titleLabelY = 9;
+        imageWidth = 240;
+        imageHeight = 186;
+        inventoryLabelY = 10000;
+        titleLabelX = 8;
+        titleLabelY = 6;
     }
 
     @Override
     protected void init() {
         super.init();
-        int x = leftPos + 12;
-        int inputX = leftPos + 108;
-        int inputWidth = imageWidth - 120;
-        int y = topPos + 31;
+        dropdowns.clear();
+        int x = leftPos + 84;
+        int y = topPos + 18;
+        int width = 148;
 
-        labelInput = edit(inputX, y, inputWidth, NotifierBlockEntity.MAX_LABEL_LENGTH,
-                menu.label(), "screen.craft_notify.label");
-        y += 27;
-        channelInput = edit(inputX, y, inputWidth, NotifierBlockEntity.MAX_CHANNEL_LENGTH,
-                menu.channelId(), "screen.craft_notify.channel");
-        y += 27;
-        titleInput = edit(inputX, y, inputWidth, NotifierBlockEntity.MAX_TITLE_LENGTH,
-                menu.titleTemplate(), "screen.craft_notify.title_template");
-        y += 27;
+        List<TerminalPresets.DeviceOption> devices = TerminalPresets.devicesFor(menu.presets().devices(), menu.label());
+        deviceButton = dropdown(x, y, width, devices,
+                TerminalPresets.selectedDevice(devices, menu.label()),
+                TerminalPresets.DeviceOption::label,
+                option -> Tooltip.create(Component.translatable("screen.craft_notify.dropdown_hint")));
 
-        contentInput = new MultiLineEditBox(
-                font, inputX, y, inputWidth, 75,
-                Component.translatable("screen.craft_notify.content_placeholder"),
-                Component.translatable("screen.craft_notify.content_template")
-        );
-        contentInput.setCharacterLimit(NotifierBlockEntity.MAX_CONTENT_LENGTH);
-        contentInput.setValue(menu.contentTemplate());
-        addRenderableWidget(contentInput);
-        y += 82;
+        y += 22;
+        List<String> channels = TerminalPresets.channelsFor(menu.availableChannels(), menu.channelId());
+        String channel = channels.contains(menu.channelId()) ? menu.channelId() : channels.getFirst();
+        channelButton = dropdown(x, y, width, channels, channel,
+                TerminalPresets::channelLabel,
+                id -> Tooltip.create(id.isBlank()
+                        ? Component.translatable("screen.craft_notify.no_channels")
+                        : Component.translatable("screen.craft_notify.dropdown_hint")));
+        channelButton.active = !channel.isBlank() || channels.size() > 1;
 
-        cooldownInput = edit(inputX, y, 70, 5, Integer.toString(menu.cooldownSeconds()),
-                "screen.craft_notify.cooldown");
-        cooldownInput.setFilter(value -> value.isEmpty() || value.chars().allMatch(Character::isDigit));
+        y += 22;
+        List<TerminalPresets.TemplateOption> titles = TerminalPresets.titlesFor(menu.presets().titles(), menu.titleTemplate());
+        titleButton = dropdown(x, y, width, titles,
+                TerminalPresets.selectedTemplate(titles, menu.titleTemplate()),
+                TerminalPresets.TemplateOption::label,
+                option -> Tooltip.create(Component.literal(option.template())));
 
-        int buttonY = topPos + imageHeight - 31;
+        y += 22;
+        List<TerminalPresets.TemplateOption> messages = TerminalPresets.messagesFor(menu.presets().messages(), menu.contentTemplate());
+        messageButton = dropdown(x, y, width, messages,
+                TerminalPresets.selectedTemplate(messages, menu.contentTemplate()),
+                TerminalPresets.TemplateOption::label,
+                option -> Tooltip.create(Component.literal(option.template())));
+
+        y += 22;
+        List<Integer> cooldowns = TerminalPresets.cooldownsFor(menu.presets().cooldowns(), menu.cooldownSeconds());
+        cooldownButton = dropdown(x, y, width, cooldowns, menu.cooldownSeconds(),
+                TerminalPresets::cooldownLabel,
+                seconds -> Tooltip.create(Component.translatable("screen.craft_notify.dropdown_hint")));
+
+        int buttonY = topPos + 160;
         addRenderableWidget(Button.builder(Component.translatable("screen.craft_notify.save"), button -> save())
-                .bounds(x, buttonY, 96, 20).build());
+                .bounds(leftPos + 28, buttonY, 60, 20).build());
         addRenderableWidget(Button.builder(Component.translatable("screen.craft_notify.test"), button -> test())
-                .bounds(x + 104, buttonY, 96, 20).build());
-        addRenderableWidget(Button.builder(Component.translatable("gui.cancel"), button -> onClose())
-                .bounds(x + 208, buttonY, 100, 20).build());
+                .bounds(leftPos + 96, buttonY, 60, 20).build());
+        addRenderableWidget(Button.builder(Component.translatable("gui.done"), button -> onClose())
+                .bounds(leftPos + 164, buttonY, 60, 20).build());
     }
 
-    private EditBox edit(int x, int y, int width, int maxLength, String value, String translationKey) {
-        EditBox box = new EditBox(font, x, y, width, 20, Component.translatable(translationKey));
-        box.setMaxLength(maxLength);
-        box.setValue(value);
-        addRenderableWidget(box);
-        return box;
+    private <T> DropdownWidget<T> dropdown(int x, int y, int width, List<T> options, T value,
+                                          java.util.function.Function<T, Component> names,
+                                          java.util.function.Function<T, Tooltip> tooltip) {
+        DropdownWidget<T> widget = new DropdownWidget<>(x, y, width, options, value, names, tooltip,
+                ignored -> {}, this::toggleDropdown);
+        dropdowns.add(addRenderableWidget(widget));
+        return widget;
     }
 
-    private int cooldownSeconds() {
-        try {
-            return Math.clamp(Integer.parseInt(cooldownInput.getValue()), 5, 86400);
-        } catch (NumberFormatException ignored) {
-            return 30;
+    private void toggleDropdown(DropdownWidget<?> widget) {
+        boolean open = !widget.isExpanded();
+        for (DropdownWidget<?> dropdown : dropdowns) {
+            dropdown.setExpanded(dropdown == widget && open);
         }
+    }
+
+    private void collapseDropdowns() {
+        for (DropdownWidget<?> dropdown : dropdowns) {
+            dropdown.collapse();
+        }
+    }
+
+    private DropdownWidget<?> expandedDropdown() {
+        for (DropdownWidget<?> dropdown : dropdowns) {
+            if (dropdown.isExpanded()) {
+                return dropdown;
+            }
+        }
+        return null;
+    }
+
+    private String selectedLabel() {
+        return deviceButton.getValue().stored();
+    }
+
+    private String selectedChannel() {
+        return channelButton.getValue();
+    }
+
+    private String selectedTitle() {
+        return titleButton.getValue().template();
+    }
+
+    private String selectedMessage() {
+        return messageButton.getValue().template();
     }
 
     private void save() {
         PacketDistributor.sendToServer(new UpdateNotifierPayload(
-                menu.blockPos(), menu.revision(), labelInput.getValue(), channelInput.getValue(),
-                titleInput.getValue(), contentInput.getValue(), cooldownSeconds()
+                menu.blockPos(), menu.revision(), selectedLabel(), selectedChannel(),
+                selectedTitle(), selectedMessage(), cooldownButton.getValue()
         ));
         onClose();
     }
 
     private void test() {
         PacketDistributor.sendToServer(new TestNotifierPayload(
-                menu.blockPos(), labelInput.getValue(), channelInput.getValue(),
-                titleInput.getValue(), contentInput.getValue()
+                menu.blockPos(), selectedLabel(), selectedChannel(),
+                selectedTitle(), selectedMessage()
         ));
     }
 
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
-        graphics.fill(leftPos, topPos, leftPos + imageWidth, topPos + imageHeight, 0xF010141A);
-        graphics.fill(leftPos + 3, topPos + 3, leftPos + imageWidth - 3, topPos + imageHeight - 3, 0xFF25303A);
-        graphics.fill(leftPos + 5, topPos + 5, leftPos + imageWidth - 5, topPos + imageHeight - 5, 0xFF111820);
+        graphics.blit(TEXTURE, leftPos, topPos, 0, 0, imageWidth, imageHeight);
+        int filled = Math.round(ENERGY_H * (float) menu.energyStored() / Math.max(1, menu.energyCapacity()));
+        filled = Math.clamp(filled, 0, ENERGY_H);
+        if (filled > 0) {
+            int skip = ENERGY_H - filled;
+            graphics.blit(TEXTURE, leftPos + ENERGY_X, topPos + ENERGY_Y + skip, 240, skip, ENERGY_W, filled);
+        }
+        graphics.blit(TEXTURE, leftPos + LAMP_X, topPos + ANTENNA_Y,
+                240, menu.antennaComplete() ? 72 : 84, LAMP_SIZE, LAMP_SIZE);
+        int statusV = 84;
+        if (menu.statusText().startsWith("SENDING")) {
+            statusV = 108;
+        } else if (menu.statusText().startsWith("FAILED")) {
+            statusV = 96;
+        }
+        graphics.blit(TEXTURE, leftPos + LAMP_X, topPos + STATUS_Y,
+                240, statusV, LAMP_SIZE, LAMP_SIZE);
     }
 
     @Override
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
-        graphics.drawString(font, title, titleLabelX, titleLabelY, 0xFFFFFF, false);
-        int y = 34;
+        graphics.drawString(font, title, titleLabelX, titleLabelY, 0x404040, false);
+        int y = 24;
         label(graphics, "screen.craft_notify.label", y);
-        y += 27;
+        y += 22;
         label(graphics, "screen.craft_notify.channel", y);
-        y += 27;
+        y += 22;
         label(graphics, "screen.craft_notify.title_template", y);
-        y += 27;
+        y += 22;
         label(graphics, "screen.craft_notify.content_template", y);
-        y += 82;
+        y += 22;
         label(graphics, "screen.craft_notify.cooldown", y);
 
-        String channels = menu.availableChannels().isBlank()
-                ? Component.translatable("screen.craft_notify.no_channels").getString()
-                : menu.availableChannels();
-        graphics.drawString(font,
-                Component.translatable("screen.craft_notify.available_channels", channels),
-                12, imageHeight - 42, 0xA9C7DA, false);
-        graphics.drawString(font,
-                Component.translatable("screen.craft_notify.status", menu.statusText()),
-                12, 20, 0xB9C5CC, false);
-        graphics.drawString(font,
-                Component.translatable("screen.craft_notify.energy", menu.energyStored(), menu.energyCapacity()),
-                174, 20, 0xFFD36A, false);
-        graphics.drawString(font,
-                Component.translatable(menu.antennaComplete()
-                        ? "screen.craft_notify.antenna_ready"
-                        : "screen.craft_notify.antenna_missing"),
-                174, imageHeight - 42, menu.antennaComplete() ? 0x66DD88 : 0xFF7777, false);
+        String preview = TerminalPresets.preview(selectedTitle(), selectedMessage(), selectedLabel());
+        if (font.width(preview) > PREVIEW_W - 4) {
+            preview = font.plainSubstrByWidth(preview, PREVIEW_W - 12) + "…";
+        }
+        graphics.drawString(font, preview, PREVIEW_X + 2, PREVIEW_Y + 6, 0xC8C8C8, false);
+    }
+
+    @Override
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.render(graphics, mouseX, mouseY, partialTick);
+        DropdownWidget<?> expanded = expandedDropdown();
+        if (expanded != null) {
+            expanded.renderMenu(graphics, mouseX, mouseY, height);
+            return;
+        }
+        this.renderTooltip(graphics, mouseX, mouseY);
+        if (inside(mouseX, mouseY, ENERGY_X, ENERGY_Y, ENERGY_W, ENERGY_H)) {
+            graphics.renderTooltip(font, Component.translatable(
+                    "screen.craft_notify.energy_tooltip",
+                    menu.energyStored(), menu.energyCapacity(),
+                    NotifierBlockEntity.ENERGY_PER_NOTIFICATION), mouseX, mouseY);
+        } else if (inside(mouseX, mouseY, LAMP_X, ANTENNA_Y, LAMP_SIZE, LAMP_SIZE)) {
+            graphics.renderTooltip(font, Component.translatable(menu.antennaComplete()
+                    ? "screen.craft_notify.antenna_ready"
+                    : "screen.craft_notify.antenna_missing"), mouseX, mouseY);
+        } else if (inside(mouseX, mouseY, LAMP_X, STATUS_Y, LAMP_SIZE, LAMP_SIZE)) {
+            graphics.renderTooltip(font, Component.literal(menu.statusText()), mouseX, mouseY);
+        }
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        DropdownWidget<?> expanded = expandedDropdown();
+        if (expanded != null && expanded.mouseClickedList(mouseX, mouseY, height)) {
+            return true;
+        }
+        boolean onHeader = false;
+        for (DropdownWidget<?> dropdown : dropdowns) {
+            if (dropdown.isOverHeader(mouseX, mouseY)) {
+                onHeader = true;
+                break;
+            }
+        }
+        boolean handled = super.mouseClicked(mouseX, mouseY, button);
+        if (!onHeader) {
+            collapseDropdowns();
+        }
+        return handled || expanded != null;
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        DropdownWidget<?> expanded = expandedDropdown();
+        if (expanded != null && expanded.mouseScrolled(mouseX, mouseY, scrollX, scrollY)) {
+            return true;
+        }
+        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+    }
+
+    private boolean inside(int mouseX, int mouseY, int x, int y, int w, int h) {
+        return mouseX >= leftPos + x && mouseX < leftPos + x + w
+                && mouseY >= topPos + y && mouseY < topPos + y + h;
     }
 
     private void label(GuiGraphics graphics, String key, int y) {
-        graphics.drawString(font, Component.translatable(key), 12, y + 6, 0xDCE5EA, false);
+        graphics.drawString(font, Component.translatable(key), 26, y, 0x404040, false);
     }
 }
