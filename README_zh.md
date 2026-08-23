@@ -1,4 +1,4 @@
-# Craft Notify · 夸父逐讯
+# Craft Notify · 夸父传讯
 
 > [!NOTE]
 > 🤖 **AI 含量警告：本模组完全由 AI 编写。人类主要负责提供红石，以及不断点击“继续”。**
@@ -15,7 +15,7 @@
   <a href="README.md">English</a> · 简体中文
 </p>
 
-Craft Notify（夸父逐讯）是一个面向 **Minecraft 1.21.1 / NeoForge** 的通知模组。给铜制通信终端接入能源、连接三格高通信天线，再输入红石上升沿，即可通过 **PushPlus、NotifyX 或自定义 Webhook** 发送自定义消息。
+Craft Notify（夸父传讯）是一个通知模组，版本线对齐 **Applied Energistics 2** 当前主流包：**Minecraft 1.20.1 Forge** 与 **Minecraft 1.21.1 NeoForge**。给铜制通信终端接入能源、连接三格高通信天线，再输入红石上升沿，即可通过 **PushPlus、NotifyX 或自定义 Webhook** 发送自定义消息。
 
 所有 HTTP 请求均异步执行，不会阻塞 Minecraft 服务端主线程。
 
@@ -27,24 +27,28 @@ Craft Notify（夸父逐讯）是一个面向 **Minecraft 1.21.1 / NeoForge** �
 - 支持任意 HTTP Webhook、自定义方法、请求头、请求体和成功状态码范围
 - 可选 HTTP 回调监听器，用于接收异步投递结果
 - 支持服务器、设备、维度、坐标、红石强度和时间等消息变量
-- 终端所有方向均提供标准 NeoForge FE 能力
+- 终端所有方向均提供标准 Forge / NeoForge FE 能力
 - 独立 Craft Notify 创造模式物品栏，同时加入原版“红石方块”分类
 - 支持迁移 Otherworld Calling 和 Redstone Messenger 的配置及注册项
 - 密钥仅保存在服务端配置中，不写入方块 NBT，也不会同步到客户端
 
 ## 运行环境
 
-| 项目 | 要求 |
-| --- | --- |
-| Minecraft | 1.21.1 |
-| Mod Loader | NeoForge 21.1.244 或兼容的更新版 21.1.x |
-| Java | 21 |
-| 安装位置 | 客户端与服务端 |
+| 版本线 | Minecraft | 加载器 | Java |
+| --- | --- | --- | --- |
+| AE2 当前 NeoForge 线 | 1.21.1 | NeoForge 21.1.244 或兼容的 21.1.x | 21 |
+| AE2 当前 Forge 线 | 1.20.1 | Forge 47.4.10 或兼容的 47.4.x | 17 |
+
+客户端与服务端安装同一份对应 JAR。Craft Notify 不依赖 AE2，只跟随同一套版本划分。
+
+暂不发布 Minecraft 26.1 NeoForge 与 1.19.2 构建。
 
 ## 安装
 
-1. 安装 Minecraft 1.21.1 和对应版本的 NeoForge。
-2. 下载 `craft-notify-neoforge-1.21.1-<版本>.jar`。
+1. 按上表安装对应的 Minecraft 与加载器。
+2. 下载匹配的 JAR：
+   - `craft-notify-neoforge-1.21.1-<版本>.jar`
+   - `craft-notify-forge-1.20.1-<版本>.jar`
 3. 将 JAR 放入客户端和服务端的 `mods` 目录。
 4. 完整重启游戏或服务器。
 5. 首次启动后编辑：
@@ -251,7 +255,7 @@ Craft Notify 不强制依赖以上任何模组。
 
 `0.5.0` 起正式使用：
 
-- 名称：`Craft Notify / 夸父逐讯`
+- 名称：`Craft Notify / 夸父传讯`
 - Mod ID：`craft_notify`
 - Java 包：`dev.thou.craftnotify`
 - 配置文件：`craft-notify-channels.properties`
@@ -268,7 +272,7 @@ Craft Notify 不强制依赖以上任何模组。
 
 ## 从源码构建
 
-需要 Java 21：
+主机需要 Java 21；1.20.1 Forge 模块会用 Java 17 工具链编译。
 
 ```bash
 ./gradlew clean build
@@ -278,6 +282,14 @@ Craft Notify 不强制依赖以上任何模组。
 
 ```text
 build/libs/craft-notify-neoforge-1.21.1-<版本>.jar
+forge-1.20.1/build/libs/craft-notify-forge-1.20.1-<版本>.jar
+```
+
+只构建其中一个版本：
+
+```bash
+./gradlew build
+./gradlew :forge-1.20.1:build
 ```
 
 开发环境启动命令：
@@ -285,6 +297,8 @@ build/libs/craft-notify-neoforge-1.21.1-<版本>.jar
 ```bash
 ./gradlew runClient
 ./gradlew runServer
+./gradlew :forge-1.20.1:runClient
+./gradlew :forge-1.20.1:runServer
 ```
 
 ## 问题排查
@@ -301,3 +315,13 @@ build/libs/craft-notify-neoforge-1.21.1-<版本>.jar
 ## 许可证
 
 MIT
+
+## 鸣谢
+
+感谢 [OpenAI Codex](https://openai.com/codex) 协助编写本模组。
+
+<p align="center">
+  <a href="https://openai.com/codex">
+    <img src="artwork/codex-logo.png" alt="OpenAI Codex" width="96">
+  </a>
+</p>

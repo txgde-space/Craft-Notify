@@ -14,17 +14,15 @@ import dev.thou.craftnotify.registry.ModMenus;
 import dev.thou.craftnotify.registry.ModSounds;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
-import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import net.neoforged.neoforge.event.server.ServerStartingEvent;
-import net.neoforged.neoforge.event.server.ServerStoppingEvent;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
+import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.event.server.ServerStartingEvent;
+import net.minecraftforge.event.server.ServerStoppingEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
 
 @Mod(CraftNotify.MOD_ID)
@@ -35,37 +33,29 @@ public final class CraftNotify {
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public static ResourceLocation id(String path) {
-        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
+        return new ResourceLocation(MOD_ID, path);
     }
 
     public static ResourceLocation legacyId(String namespace, String path) {
-        return ResourceLocation.fromNamespaceAndPath(namespace, path);
+        return new ResourceLocation(namespace, path);
     }
 
-    public CraftNotify(IEventBus modBus, ModContainer container) {
+    public CraftNotify() {
+        IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         ModBlocks.register(modBus);
         ModBlockEntities.register(modBus);
         ModMenus.register(modBus);
         ModSounds.register(modBus);
         ModCreativeTabs.register(modBus);
+        ModNetworking.register();
         modBus.addListener(this::addCreativeTabContents);
-        modBus.addListener(ModNetworking::register);
-        modBus.addListener(this::registerCapabilities);
-        NeoForge.EVENT_BUS.register(this);
-    }
-
-    private void registerCapabilities(RegisterCapabilitiesEvent event) {
-        event.registerBlockEntity(
-                Capabilities.EnergyStorage.BLOCK,
-                ModBlockEntities.NOTIFIER.get(),
-                (notifier, side) -> notifier.energyStorage()
-        );
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
     private void addCreativeTabContents(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.REDSTONE_BLOCKS) {
-            event.accept(ModBlocks.NOTIFIER_ITEM);
-            event.accept(ModBlocks.ANTENNA_ITEM);
+            event.accept(ModBlocks.NOTIFIER_ITEM.get());
+            event.accept(ModBlocks.ANTENNA_ITEM.get());
         }
     }
 

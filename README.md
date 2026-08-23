@@ -15,7 +15,7 @@
   English · <a href="README_zh.md">简体中文</a>
 </p>
 
-Craft Notify is a notification mod for **Minecraft 1.21.1 and NeoForge**. Power a copper communication terminal, connect its three-block-tall antenna, and send a redstone rising edge to deliver a custom message through **PushPlus, NotifyX, or a generic Webhook**.
+Craft Notify is a notification mod aligned with **Applied Energistics 2**'s current pack versions: **Minecraft 1.20.1 Forge** and **Minecraft 1.21.1 NeoForge**. Power a copper communication terminal, connect its three-block-tall antenna, and send a redstone rising edge to deliver a custom message through **PushPlus, NotifyX, or a generic Webhook**.
 
 All HTTP requests run asynchronously and do not block the Minecraft server tick thread.
 
@@ -27,24 +27,28 @@ All HTTP requests run asynchronously and do not block the Minecraft server tick 
 - Generic HTTP Webhooks with custom methods, headers, bodies, and success ranges
 - Optional HTTP callback listener for asynchronous delivery results
 - Message variables for server, device, dimension, coordinates, power, and time
-- Standard NeoForge FE energy capability on every terminal side
+- Standard Forge / NeoForge FE energy capability on every terminal side
 - Dedicated Craft Notify creative tab and entries in the vanilla Redstone Blocks tab
 - Migration support for Otherworld Calling and Redstone Messenger configurations and registry IDs
 - Server-only secrets that are never stored in block NBT or synchronized to clients
 
 ## Requirements
 
-| Component | Requirement |
-| --- | --- |
-| Minecraft | 1.21.1 |
-| Mod loader | NeoForge 21.1.244 or a compatible newer 21.1.x build |
-| Java | 21 |
-| Installation side | Client and server |
+| Edition | Minecraft | Loader | Java |
+| --- | --- | --- | --- |
+| Current AE2 NeoForge line | 1.21.1 | NeoForge 21.1.244 or a compatible 21.1.x build | 21 |
+| Current AE2 Forge line | 1.20.1 | Forge 47.4.10 or a compatible 47.4.x build | 17 |
+
+Install the matching JAR on both the client and the server. AE2 itself is optional; Craft Notify only follows the same version split.
+
+Minecraft 26.1 NeoForge and 1.19.2 builds are not published yet.
 
 ## Installation
 
-1. Install Minecraft 1.21.1 with NeoForge.
-2. Download `craft-notify-neoforge-1.21.1-<version>.jar`.
+1. Install the Minecraft version and loader from the table above.
+2. Download the matching JAR:
+   - `craft-notify-neoforge-1.21.1-<version>.jar`
+   - `craft-notify-forge-1.20.1-<version>.jar`
 3. Place the JAR in the `mods` directory on both the client and server.
 4. Fully restart the game or server.
 5. After the first launch, edit:
@@ -251,7 +255,7 @@ Craft Notify has no hard dependency on these mods.
 
 Version `0.5.0` adopts the release identity:
 
-- Name: `Craft Notify / 夸父逐讯`
+- Name: `Craft Notify / 夸父传讯`
 - Mod ID: `craft_notify`
 - Java package: `dev.thou.craftnotify`
 - Configuration: `craft-notify-channels.properties`
@@ -268,16 +272,24 @@ The source file remains untouched as a backup. NeoForge registry aliases migrate
 
 ## Building from source
 
-Java 21 is required.
+Java 21 is required on the host; the 1.20.1 Forge module compiles with a Java 17 toolchain.
 
 ```bash
 ./gradlew clean build
 ```
 
-The resulting JAR is written to:
+JARs are written to:
 
 ```text
 build/libs/craft-notify-neoforge-1.21.1-<version>.jar
+forge-1.20.1/build/libs/craft-notify-forge-1.20.1-<version>.jar
+```
+
+Build one edition:
+
+```bash
+./gradlew build
+./gradlew :forge-1.20.1:build
 ```
 
 Development runs:
@@ -285,6 +297,8 @@ Development runs:
 ```bash
 ./gradlew runClient
 ./gradlew runServer
+./gradlew :forge-1.20.1:runClient
+./gradlew :forge-1.20.1:runServer
 ```
 
 ## Troubleshooting
@@ -301,3 +315,13 @@ If a notification fails:
 ## License
 
 MIT
+
+## Acknowledgements
+
+Thanks to [OpenAI Codex](https://openai.com/codex) for helping write this mod.
+
+<p align="center">
+  <a href="https://openai.com/codex">
+    <img src="artwork/codex-logo.png" alt="OpenAI Codex" width="96">
+  </a>
+</p>

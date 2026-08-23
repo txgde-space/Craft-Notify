@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "craft_notify:notifier",
+    "craft_notify:antenna"
+  ]
+}

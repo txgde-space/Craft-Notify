@@ -1,5 +1,5 @@
 {
-  "itemGroup.craft_notify.main": "夸父逐讯",
+  "itemGroup.craft_notify.main": "夸父传讯",
   "block.craft_notify.notifier": "夸父通信终端",
   "block.craft_notify.antenna": "夸父通信天线",
   "screen.craft_notify.notifier": "通信终端",
@@ -32,5 +32,9 @@
   "message.craft_notify.busy": "终端正在发送，请稍候",
   "message.craft_notify.test_sending": "正在充能天线并发送测试通知……",
   "message.craft_notify.test_accepted": "测试通知已被接口受理",
-  "message.craft_notify.test_failed": "测试通知失败：%s"
+  "message.craft_notify.test_failed": "测试通知失败：%s",
+  "subtitles.craft_notify.charge": "终端充能",
+  "subtitles.craft_notify.beam": "天线传讯",
+  "subtitles.craft_notify.success": "通知已受理",
+  "subtitles.craft_notify.fail": "通知失败"
 }

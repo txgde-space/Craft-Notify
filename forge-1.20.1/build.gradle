@@ -1,0 +1,69 @@
+plugins {
+    id 'java-library'
+    id 'net.neoforged.moddev.legacyforge'
+}
+
+version = mod_version
+group = mod_group_id
+
+base {
+    archivesName = "craft-notify-forge-${forge_minecraft_version}"
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+
+sourceSets.main.resources {
+    srcDir(rootProject.file('src/main/resources'))
+}
+
+legacyForge {
+    version = "${forge_minecraft_version}-${forge_version}"
+
+    parchment {
+        mappingsVersion = forge_parchment_mappings_version
+        minecraftVersion = forge_parchment_minecraft_version
+    }
+
+    runs {
+        client {
+            client()
+        }
+        server {
+            server()
+            programArgument '--nogui'
+        }
+        configureEach {
+            systemProperty 'forge.logging.markers', 'REGISTRIES'
+            logLevel = org.slf4j.event.Level.INFO
+        }
+    }
+
+    mods {
+        "${mod_id}" {
+            sourceSet(sourceSets.main)
+        }
+    }
+}
+
+var generateModMetadata = tasks.register('generateModMetadata', ProcessResources) {
+    var replaceProperties = [
+            minecraft_version      : forge_minecraft_version,
+            minecraft_version_range: forge_minecraft_version_range,
+            forge_version          : forge_version,
+            loader_version_range   : forge_loader_version_range,
+            mod_id                 : mod_id,
+            mod_name               : mod_name,
+            mod_license            : mod_license,
+            mod_version            : mod_version,
+    ]
+    inputs.properties replaceProperties
+    expand replaceProperties
+    from 'src/main/templates'
+    into 'build/generated/sources/modMetadata'
+}
+
+sourceSets.main.resources.srcDir generateModMetadata
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}

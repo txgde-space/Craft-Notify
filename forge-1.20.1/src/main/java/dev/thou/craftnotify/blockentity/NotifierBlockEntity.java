@@ -1,5 +1,7 @@
 package dev.thou.craftnotify.blockentity;
 
+import dev.thou.craftnotify.MoreMath;
+
 import dev.thou.craftnotify.notification.NotificationDispatcher;
 import dev.thou.craftnotify.notification.NotificationJob;
 import dev.thou.craftnotify.notification.NotificationResult;
@@ -12,7 +14,6 @@ import dev.thou.craftnotify.registry.ModBlockEntities;
 import dev.thou.craftnotify.registry.ModBlocks;
 import dev.thou.craftnotify.registry.ModSounds;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -31,6 +32,14 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.core.Direction;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.energy.IEnergyStorage;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -424,7 +433,7 @@ public final class NotifierBlockEntity extends BlockEntity implements MenuProvid
         this.channelId = limit(channelId, MAX_CHANNEL_LENGTH);
         this.titleTemplate = limit(title, MAX_TITLE_LENGTH);
         this.contentTemplate = limit(content, MAX_CONTENT_LENGTH);
-        this.cooldownTicks = Math.clamp(cooldownSeconds, 5, 86400) * 20L;
+        this.cooldownTicks = MoreMath.clamp(cooldownSeconds, 5, 86400) * 20L;
         configRevision++;
         refreshReadyStatus();
         setChanged();
@@ -660,6 +669,38 @@ public final class NotifierBlockEntity extends BlockEntity implements MenuProvid
                 accepted ? 0.85F : 0.8F, 1.0F);
     }
 
+    private LazyOptional<IEnergyStorage> energyCap = LazyOptional.of(() -> energyStorage);
+
+    @Override
+    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
+        if (cap == ForgeCapabilities.ENERGY) {
+            return energyCap.cast();
+        }
+        return super.getCapability(cap, side);
+    }
+
+    @Override
+    public void invalidateCaps() {
+        super.invalidateCaps();
+        energyCap.invalidate();
+    }
+
+    @Override
+    public void reviveCaps() {
+        super.reviveCaps();
+        energyCap = LazyOptional.of(() -> energyStorage);
+    }
+
+    @Override
+    public AABB getRenderBoundingBox() {
+        if (status != NotificationStatus.SENDING || sendAnimStart < 0) {
+            return new AABB(worldPosition);
+        }
+        BlockPos antenna = antennaBasePos();
+        BlockPos origin = antenna != null ? antenna : worldPosition;
+        return new AABB(origin).expandTowards(0.0, BEAM_HEIGHT + 4.0, 0.0).inflate(1.5);
+    }
+
     public boolean hasCompleteAntenna() {
         return antennaBasePos() != null;
     }
@@ -675,8 +716,8 @@ public final class NotifierBlockEntity extends BlockEntity implements MenuProvid
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
+    protected void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
         tag.putString("label", label);
         tag.putString("channel_id", channelId);
         tag.putString("title_template", titleTemplate);
@@ -706,8 +747,8 @@ public final class NotifierBlockEntity extends BlockEntity implements MenuProvid
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
+    public void load(CompoundTag tag) {
+        super.load(tag);
         label = tag.getString("label");
         channelId = tag.getString("channel_id");
         titleTemplate = tag.getString("title_template");
@@ -746,10 +787,8 @@ public final class NotifierBlockEntity extends BlockEntity implements MenuProvid
     }
 
     @Override
-    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
-        CompoundTag tag = new CompoundTag();
-        saveAdditional(tag, registries);
-        return tag;
+    public CompoundTag getUpdateTag() {
+        return saveWithoutMetadata();
     }
 
     @Override

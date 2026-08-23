@@ -1,0 +1,26 @@
+{
+  "charge": {
+    "subtitle": "subtitles.craft_notify.charge",
+    "sounds": [
+      { "name": "craft_notify:charge", "volume": 1.0 }
+    ]
+  },
+  "beam": {
+    "subtitle": "subtitles.craft_notify.beam",
+    "sounds": [
+      { "name": "craft_notify:beam", "volume": 1.0 }
+    ]
+  },
+  "success": {
+    "subtitle": "subtitles.craft_notify.success",
+    "sounds": [
+      { "name": "craft_notify:success", "volume": 0.9 }
+    ]
+  },
+  "fail": {
+    "subtitle": "subtitles.craft_notify.fail",
+    "sounds": [
+      { "name": "craft_notify:fail", "volume": 0.85 }
+    ]
+  }
+}

@@ -32,5 +32,9 @@
   "message.craft_notify.busy": "The terminal is already transmitting",
   "message.craft_notify.test_sending": "Charging the antenna and sending a test notification...",
   "message.craft_notify.test_accepted": "The test notification was accepted by the provider",
-  "message.craft_notify.test_failed": "Test notification failed: %s"
+  "message.craft_notify.test_failed": "Test notification failed: %s",
+  "subtitles.craft_notify.charge": "Terminal charging",
+  "subtitles.craft_notify.beam": "Antenna transmitting",
+  "subtitles.craft_notify.success": "Notification accepted",
+  "subtitles.craft_notify.fail": "Notification failed"
 }
