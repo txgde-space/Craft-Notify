@@ -1,0 +1,39 @@
+{
+  "textures": {
+    "copper": "craft_notify:block/terminal_casing",
+    "dark": "minecraft:block/deepslate_tiles",
+    "screen": "minecraft:block/warped_planks",
+    "input": "minecraft:block/redstone_block",
+    "light": "minecraft:block/redstone_lamp",
+    "particle": "craft_notify:block/terminal_casing"
+  },
+  "elements": [
+    {
+      "from": [0, 0, 0], "to": [16, 16, 16],
+      "faces": {
+        "down": { "texture": "#copper", "cullface": "down" },
+        "up": { "texture": "#copper", "cullface": "up" },
+        "north": { "texture": "#dark", "cullface": "north" },
+        "south": { "texture": "#copper", "cullface": "south" },
+        "west": { "texture": "#copper", "cullface": "west" },
+        "east": { "texture": "#copper", "cullface": "east" }
+      }
+    },
+    {
+      "from": [2, 7, -0.5], "to": [14, 14, 0],
+      "faces": { "north": { "texture": "#screen", "uv": [0, 0, 16, 9] } }
+    },
+    {
+      "from": [2, 2, -0.5], "to": [5, 5, 0],
+      "faces": { "north": { "texture": "#input" } }
+    },
+    {
+      "from": [11, 2, -0.75], "to": [13, 4, 0],
+      "faces": { "north": { "texture": "#light" } }
+    },
+    {
+      "from": [6, 2, -0.5], "to": [10, 3, 0],
+      "faces": { "north": { "texture": "#copper" } }
+    }
+  ]
+}

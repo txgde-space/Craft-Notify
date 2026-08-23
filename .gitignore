@@ -1,0 +1,9 @@
+.gradle/
+build/
+run/
+.idea/
+.run/
+*.iml
+out/
+.DS_Store
+src/generated/resources/.cache/

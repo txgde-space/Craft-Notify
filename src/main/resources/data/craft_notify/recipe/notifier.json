@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "CRC",
+    "QOQ",
+    "ITI"
+  ],
+  "key": {
+    "C": { "item": "minecraft:copper_ingot" },
+    "R": { "item": "minecraft:redstone" },
+    "Q": { "item": "minecraft:quartz" },
+    "O": { "item": "minecraft:observer" },
+    "I": { "item": "minecraft:iron_ingot" },
+    "T": { "item": "minecraft:redstone_torch" }
+  },
+  "result": {
+    "id": "craft_notify:notifier",
+    "count": 1
+  }
+}

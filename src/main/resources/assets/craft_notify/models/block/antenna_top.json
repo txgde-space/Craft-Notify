@@ -1,0 +1,32 @@
+{
+  "textures": {
+    "metal": "craft_notify:block/terminal_casing",
+    "tip": "minecraft:block/redstone_block"
+  },
+  "elements": [
+    {
+      "from": [6, 0, 6], "to": [10, 13, 10],
+      "faces": {
+        "down": { "texture": "#metal" }, "up": { "texture": "#metal" },
+        "north": { "texture": "#metal" }, "south": { "texture": "#metal" },
+        "west": { "texture": "#metal" }, "east": { "texture": "#metal" }
+      }
+    },
+    {
+      "from": [1, 10, 6.5], "to": [15, 13, 9.5],
+      "faces": {
+        "down": { "texture": "#metal" }, "up": { "texture": "#metal" },
+        "north": { "texture": "#metal" }, "south": { "texture": "#metal" },
+        "west": { "texture": "#metal" }, "east": { "texture": "#metal" }
+      }
+    },
+    {
+      "from": [7, 13, 7], "to": [9, 16, 9],
+      "faces": {
+        "down": { "texture": "#tip" }, "up": { "texture": "#tip" },
+        "north": { "texture": "#tip" }, "south": { "texture": "#tip" },
+        "west": { "texture": "#tip" }, "east": { "texture": "#tip" }
+      }
+    }
+  ]
+}

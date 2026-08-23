@@ -1,0 +1,13 @@
+{
+  "textures": { "metal": "craft_notify:block/terminal_casing" },
+  "elements": [
+    {
+      "from": [6, 0, 6], "to": [10, 16, 10],
+      "faces": {
+        "down": { "texture": "#metal" }, "up": { "texture": "#metal" },
+        "north": { "texture": "#metal" }, "south": { "texture": "#metal" },
+        "west": { "texture": "#metal" }, "east": { "texture": "#metal" }
+      }
+    }
+  ]
+}

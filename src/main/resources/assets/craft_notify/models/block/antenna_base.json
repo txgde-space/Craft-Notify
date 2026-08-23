@@ -1,0 +1,24 @@
+{
+  "textures": {
+    "metal": "craft_notify:block/terminal_casing",
+    "dark": "minecraft:block/deepslate_tiles"
+  },
+  "elements": [
+    {
+      "from": [2, 0, 2], "to": [14, 3, 14],
+      "faces": {
+        "down": { "texture": "#dark" }, "up": { "texture": "#metal" },
+        "north": { "texture": "#dark" }, "south": { "texture": "#dark" },
+        "west": { "texture": "#dark" }, "east": { "texture": "#dark" }
+      }
+    },
+    {
+      "from": [6, 3, 6], "to": [10, 16, 10],
+      "faces": {
+        "down": { "texture": "#metal" }, "up": { "texture": "#metal" },
+        "north": { "texture": "#metal" }, "south": { "texture": "#metal" },
+        "west": { "texture": "#metal" }, "east": { "texture": "#metal" }
+      }
+    }
+  ]
+}

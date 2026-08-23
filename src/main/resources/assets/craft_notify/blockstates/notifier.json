@@ -1,0 +1,12 @@
+{
+  "variants": {
+    "facing=north,powered=false": { "model": "craft_notify:block/notifier" },
+    "facing=east,powered=false": { "model": "craft_notify:block/notifier", "y": 90 },
+    "facing=south,powered=false": { "model": "craft_notify:block/notifier", "y": 180 },
+    "facing=west,powered=false": { "model": "craft_notify:block/notifier", "y": 270 },
+    "facing=north,powered=true": { "model": "craft_notify:block/notifier_powered" },
+    "facing=east,powered=true": { "model": "craft_notify:block/notifier_powered", "y": 90 },
+    "facing=south,powered=true": { "model": "craft_notify:block/notifier_powered", "y": 180 },
+    "facing=west,powered=true": { "model": "craft_notify:block/notifier_powered", "y": 270 }
+  }
+}

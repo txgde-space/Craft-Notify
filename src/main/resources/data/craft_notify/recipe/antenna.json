@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    " A ",
+    "CRC",
+    "CIC"
+  ],
+  "key": {
+    "A": { "item": "minecraft:amethyst_shard" },
+    "C": { "item": "minecraft:copper_ingot" },
+    "R": { "item": "minecraft:redstone_torch" },
+    "I": { "item": "minecraft:iron_ingot" }
+  },
+  "result": {
+    "id": "craft_notify:antenna",
+    "count": 1
+  }
+}

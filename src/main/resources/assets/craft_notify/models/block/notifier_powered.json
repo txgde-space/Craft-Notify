@@ -1,0 +1,7 @@
+{
+  "parent": "craft_notify:block/notifier",
+  "textures": {
+    "light": "minecraft:block/redstone_lamp_on",
+    "screen": "minecraft:block/warped_stem"
+  }
+}

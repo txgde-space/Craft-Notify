@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "part=base": { "model": "craft_notify:block/antenna_base" },
+    "part=middle": { "model": "craft_notify:block/antenna_middle" },
+    "part=top": { "model": "craft_notify:block/antenna_top" }
+  }
+}
