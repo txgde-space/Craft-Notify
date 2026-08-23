@@ -1,0 +1,33 @@
+{
+  "textures": {
+    "glow": "craft_notify:block/antenna_glow",
+    "port": "craft_notify:block/terminal_port_on",
+    "particle": "craft_notify:block/antenna_glow"
+  },
+  "elements": [
+    {
+      "from": [5.5, 0.75, -0.55],
+      "to": [10.5, 4.5, 0.45],
+      "shade": false,
+      "faces": {
+        "down": { "texture": "#glow" },
+        "up": { "texture": "#glow" },
+        "north": { "texture": "#glow" },
+        "west": { "texture": "#glow" },
+        "east": { "texture": "#glow" }
+      }
+    },
+    {
+      "from": [6.3, 1.35, -0.8],
+      "to": [9.7, 3.75, 0.05],
+      "shade": false,
+      "faces": {
+        "down": { "texture": "#port" },
+        "up": { "texture": "#port" },
+        "north": { "texture": "#port" },
+        "west": { "texture": "#port" },
+        "east": { "texture": "#port" }
+      }
+    }
+  ]
+}

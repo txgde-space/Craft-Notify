@@ -86,6 +86,7 @@ public final class NotifierBlockEntity extends BlockEntity implements MenuProvid
     private BlockPos cachedAntennaBase;
     private boolean antennaCacheValid;
     private long lastEnergySaveTick;
+    private boolean enabled;
 
     public NotifierBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.NOTIFIER.get(), pos, state);
@@ -117,6 +118,7 @@ public final class NotifierBlockEntity extends BlockEntity implements MenuProvid
         super.onLoad();
         invalidateAntennaCache();
         if (level instanceof ServerLevel serverLevel) {
+            NotifierBlock.refreshLinks(serverLevel, worldPosition);
             syncVisualState();
             if (shouldKeepTicking()) {
                 serverLevel.scheduleTick(worldPosition, getBlockState().getBlock(), 1);
@@ -199,6 +201,9 @@ public final class NotifierBlockEntity extends BlockEntity implements MenuProvid
     }
 
     private void trigger(ServerLevel level, int signalPower) {
+        if (!enabled) {
+            return;
+        }
         if (status == NotificationStatus.SENDING) {
             return;
         }
@@ -240,6 +245,10 @@ public final class NotifierBlockEntity extends BlockEntity implements MenuProvid
                      String candidateTitle, String candidateContent) {
         if (!canPlayerEdit(player)) {
             player.displayClientMessage(Component.translatable("message.craft_notify.too_far"), false);
+            return;
+        }
+        if (!enabled) {
+            player.displayClientMessage(Component.translatable("message.craft_notify.disabled"), false);
             return;
         }
         if (!SecretChannelStore.hasChannel(candidateChannel)) {
@@ -407,7 +416,9 @@ public final class NotifierBlockEntity extends BlockEntity implements MenuProvid
         if (status == NotificationStatus.SENDING) {
             return;
         }
-        if (!hasCompleteAntenna()) {
+        if (!enabled) {
+            setStatus(NotificationStatus.DISABLED, "Terminal is disabled");
+        } else if (!hasCompleteAntenna()) {
             setStatus(NotificationStatus.MISSING_ANTENNA, "A complete 3-block antenna must be adjacent");
         } else if (availableEnergy() < ENERGY_PER_NOTIFICATION) {
             setStatus(NotificationStatus.NO_ENERGY,
@@ -420,21 +431,28 @@ public final class NotifierBlockEntity extends BlockEntity implements MenuProvid
     }
 
     public boolean configure(Player player, int expectedRevision, String label, String channelId,
-                             String title, String content, int cooldownSeconds) {
+                             String title, String content, int cooldownSeconds, boolean enabled) {
         if (!canPlayerEdit(player) || expectedRevision != configRevision) {
             return false;
         }
-        configure(label, channelId, title, content, cooldownSeconds);
+        configure(label, channelId, title, content, cooldownSeconds, enabled);
         return true;
     }
 
     public void configure(String label, String channelId, String title, String content, int cooldownSeconds) {
+        configure(label, channelId, title, content, cooldownSeconds, this.enabled);
+    }
+
+    public void configure(String label, String channelId, String title, String content, int cooldownSeconds,
+                          boolean enabled) {
         this.label = limit(label, MAX_LABEL_LENGTH);
         this.channelId = limit(channelId, MAX_CHANNEL_LENGTH);
         this.titleTemplate = limit(title, MAX_TITLE_LENGTH);
         this.contentTemplate = limit(content, MAX_CONTENT_LENGTH);
         this.cooldownTicks = MoreMath.clamp(cooldownSeconds, 5, 86400) * 20L;
+        this.enabled = enabled;
         configRevision++;
+        applyEnabledState();
         refreshReadyStatus();
         setChanged();
     }
@@ -474,6 +492,7 @@ public final class NotifierBlockEntity extends BlockEntity implements MenuProvid
     }
 
     private void syncVisualState() {
+        applyEnabledState();
         applyEnergyBand(energyBand(energyStorage.getEnergyStored()));
         if (level instanceof ServerLevel serverLevel) {
             boolean sending = status == NotificationStatus.SENDING;
@@ -552,6 +571,31 @@ public final class NotifierBlockEntity extends BlockEntity implements MenuProvid
         level.sendParticles(ParticleTypes.GLOW,
                 part.getX() + 0.5, part.getY() + 0.8, part.getZ() + 0.5,
                 4, 0.1, 0.2, 0.1, 0.01);
+    }
+
+    private void spawnSuccessParticles(ServerLevel level) {
+        BlockPos base = antennaBasePos();
+        if (base == null) {
+            return;
+        }
+        double x = base.getX() + 0.5;
+        double y = base.getY() + 2.85;
+        double z = base.getZ() + 0.5;
+        level.sendParticles(ParticleTypes.GLOW, x, y, z, 22, 0.12, 0.16, 0.12, 0.0);
+        level.sendParticles(ParticleTypes.ELECTRIC_SPARK, x, y, z, 16, 0.18, 0.22, 0.18, 0.10);
+        level.sendParticles(ParticleTypes.CRIT, x, y, z, 10, 0.14, 0.18, 0.14, 0.12);
+        for (int i = 0; i < 16; i++) {
+            double vx = (level.random.nextDouble() - 0.5) * 0.07;
+            double vy = 0.14 + level.random.nextDouble() * 0.32;
+            double vz = (level.random.nextDouble() - 0.5) * 0.07;
+            level.sendParticles(ParticleTypes.END_ROD, x, y, z, 0, vx, vy, vz, 1.0);
+        }
+        for (int i = 0; i < 8; i++) {
+            double vx = (level.random.nextDouble() - 0.5) * 0.05;
+            double vy = 0.08 + level.random.nextDouble() * 0.18;
+            double vz = (level.random.nextDouble() - 0.5) * 0.05;
+            level.sendParticles(ParticleTypes.GLOW, x, y + 0.05, z, 0, vx, vy, vz, 1.0);
+        }
     }
 
     public boolean isTransmitAnimating() {
@@ -653,6 +697,17 @@ public final class NotifierBlockEntity extends BlockEntity implements MenuProvid
     public int energyStored() { return energyStorage.getEnergyStored(); }
     public int energyCapacity() { return ENERGY_CAPACITY; }
     public TerminalEnergyStorage energyStorage() { return energyStorage; }
+    public boolean enabled() { return enabled; }
+
+    private void applyEnabledState() {
+        if (!(level instanceof ServerLevel serverLevel)) {
+            return;
+        }
+        BlockState state = getBlockState();
+        if (state.hasProperty(NotifierBlock.ENABLED) && state.getValue(NotifierBlock.ENABLED) != enabled) {
+            serverLevel.setBlock(worldPosition, state.setValue(NotifierBlock.ENABLED, enabled), 3);
+        }
+    }
 
     private void playAntennaSound(ServerLevel level, SoundEvent sound, float volume, float pitch) {
         BlockPos antenna = antennaBasePos();
@@ -665,8 +720,12 @@ public final class NotifierBlockEntity extends BlockEntity implements MenuProvid
     }
 
     private void playResultSound(ServerLevel level, boolean accepted) {
-        playTerminalSound(level, accepted ? ModSounds.SUCCESS.get() : ModSounds.FAIL.get(),
-                accepted ? 0.85F : 0.8F, 1.0F);
+        if (accepted) {
+            playAntennaSound(level, ModSounds.SUCCESS.get(), 0.9F, 1.0F);
+            spawnSuccessParticles(level);
+        } else {
+            playTerminalSound(level, ModSounds.FAIL.get(), 0.8F, 1.0F);
+        }
     }
 
     private LazyOptional<IEnergyStorage> energyCap = LazyOptional.of(() -> energyStorage);
@@ -735,6 +794,7 @@ public final class NotifierBlockEntity extends BlockEntity implements MenuProvid
         tag.putLong("request_sequence", requestSequence);
         tag.putInt("config_revision", configRevision);
         tag.putInt("energy", energyStorage.getEnergyStored());
+        tag.putBoolean("enabled", enabled);
         tag.putLong("send_anim_start", sendAnimStart);
         if (pendingChannel != null) {
             tag.putString("pending_channel", pendingChannel);
@@ -761,6 +821,7 @@ public final class NotifierBlockEntity extends BlockEntity implements MenuProvid
         requestSequence = tag.getLong("request_sequence");
         configRevision = tag.getInt("config_revision");
         energyStorage.setEnergy(tag.getInt("energy"));
+        enabled = tag.getBoolean("enabled");
         if (tag.hasUUID("instance_id")) {
             instanceId = tag.getUUID("instance_id");
         }

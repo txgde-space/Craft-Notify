@@ -8,7 +8,7 @@
   "beam": {
     "subtitle": "subtitles.craft_notify.beam",
     "sounds": [
-      { "name": "craft_notify:beam", "volume": 1.0 }
+      { "name": "craft_notify:beam", "volume": 1.18 }
     ]
   },
   "success": {

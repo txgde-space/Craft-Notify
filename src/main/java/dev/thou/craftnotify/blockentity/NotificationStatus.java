@@ -2,6 +2,7 @@ package dev.thou.craftnotify.blockentity;
 
 public enum NotificationStatus {
     UNCONFIGURED(0),
+    DISABLED(0),
     MISSING_ANTENNA(1),
     NO_ENERGY(2),
     READY(3),

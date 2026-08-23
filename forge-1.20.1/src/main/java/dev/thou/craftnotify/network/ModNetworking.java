@@ -51,7 +51,8 @@ public final class ModNetworking {
                     payload.channelId(),
                     payload.title(),
                     payload.content(),
-                    payload.cooldownSeconds()
+                    payload.cooldownSeconds(),
+                    payload.enabled()
             );
             if (saved) {
                 player.displayClientMessage(Component.translatable("message.craft_notify.saved"), false);

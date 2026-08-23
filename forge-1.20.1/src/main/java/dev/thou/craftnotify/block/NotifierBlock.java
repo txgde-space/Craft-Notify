@@ -14,6 +14,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -30,27 +31,65 @@ import org.jetbrains.annotations.Nullable;
 public final class NotifierBlock extends BaseEntityBlock {
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
     public static final BooleanProperty SENDING = BooleanProperty.create("sending");
+    public static final BooleanProperty ENABLED = BooleanProperty.create("enabled");
     public static final IntegerProperty ENERGY = IntegerProperty.create("energy", 0, 4);
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final BooleanProperty NORTH = BlockStateProperties.NORTH;
+    public static final BooleanProperty EAST = BlockStateProperties.EAST;
+    public static final BooleanProperty SOUTH = BlockStateProperties.SOUTH;
+    public static final BooleanProperty WEST = BlockStateProperties.WEST;
 
     public NotifierBlock(Properties properties) {
         super(properties);
         registerDefaultState(stateDefinition.any()
                 .setValue(POWERED, false)
                 .setValue(SENDING, false)
+                .setValue(ENABLED, false)
                 .setValue(ENERGY, 0)
-                .setValue(FACING, Direction.NORTH));
+                .setValue(FACING, Direction.NORTH)
+                .setValue(NORTH, false)
+                .setValue(EAST, false)
+                .setValue(SOUTH, false)
+                .setValue(WEST, false));
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<net.minecraft.world.level.block.Block, BlockState> builder) {
-        builder.add(POWERED, SENDING, ENERGY, FACING);
+        builder.add(POWERED, SENDING, ENABLED, ENERGY, FACING, NORTH, EAST, SOUTH, WEST);
     }
 
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
+        BlockPos pos = context.getClickedPos();
+        return withLinks(context.getLevel(), pos,
+                defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite()));
+    }
+
+    public static BlockState withLinks(LevelAccessor level, BlockPos pos, BlockState state) {
+        return state
+                .setValue(NORTH, isAntennaBase(level, pos.north()))
+                .setValue(EAST, isAntennaBase(level, pos.east()))
+                .setValue(SOUTH, isAntennaBase(level, pos.south()))
+                .setValue(WEST, isAntennaBase(level, pos.west()));
+    }
+
+    public static void refreshLinks(Level level, BlockPos pos) {
+        BlockState state = level.getBlockState(pos);
+        if (!state.is(dev.thou.craftnotify.registry.ModBlocks.NOTIFIER.get())) {
+            return;
+        }
+        BlockState next = withLinks(level, pos, state);
+        if (next != state) {
+            level.setBlock(pos, next, 3);
+        }
+    }
+
+    private static boolean isAntennaBase(LevelAccessor level, BlockPos pos) {
+        BlockState state = level.getBlockState(pos);
+        return state.is(dev.thou.craftnotify.registry.ModBlocks.ANTENNA.get())
+                && state.hasProperty(AntennaBlock.PART)
+                && state.getValue(AntennaBlock.PART) == AntennaPart.BASE;
     }
 
     @Override
@@ -74,10 +113,19 @@ public final class NotifierBlock extends BaseEntityBlock {
     }
 
     @Override
+    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState,
+                                  LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+        return withLinks(level, pos, state);
+    }
+
+    @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
         if (!level.isClientSide()) {
             boolean powered = level.hasNeighborSignal(pos);
-            level.setBlock(pos, state.setValue(POWERED, powered), 2);
+            level.setBlock(pos, withLinks(level, pos, state.setValue(POWERED, powered)), 3);
+            for (Direction direction : Direction.Plane.HORIZONTAL) {
+                AntennaBlock.refreshLinks(level, pos.relative(direction));
+            }
             if (level.getBlockEntity(pos) instanceof NotifierBlockEntity notifier) {
                 notifier.initializePowerBaseline(powered);
                 if (placer instanceof Player player) {
@@ -96,14 +144,16 @@ public final class NotifierBlock extends BaseEntityBlock {
             return;
         }
 
+        BlockState next = withLinks(level, pos, state);
         boolean powered = level.hasNeighborSignal(pos);
         boolean wasPowered = state.getValue(POWERED);
-        if (powered == wasPowered) {
-            return;
+        if (powered != wasPowered) {
+            next = next.setValue(POWERED, powered);
         }
-
-        level.setBlock(pos, state.setValue(POWERED, powered), 2);
-        if (level.getBlockEntity(pos) instanceof NotifierBlockEntity notifier) {
+        if (next != state) {
+            level.setBlock(pos, next, 3);
+        }
+        if (powered != wasPowered && level.getBlockEntity(pos) instanceof NotifierBlockEntity notifier) {
             notifier.onPowerChanged(serverLevel, powered, strongestSignal(level, pos));
         }
     }
@@ -140,6 +190,7 @@ public final class NotifierBlock extends BaseEntityBlock {
                 buf.writeVarInt(notifier.energyStored());
                 buf.writeVarInt(notifier.energyCapacity());
                 buf.writeBoolean(notifier.hasCompleteAntenna());
+                buf.writeBoolean(notifier.enabled());
                 GuiPresetStore.catalog().write(buf);
             });
         }
@@ -165,10 +216,13 @@ public final class NotifierBlock extends BaseEntityBlock {
 
     @Override
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
-        if (!state.is(newState.getBlock())
-                && !level.isClientSide()
-                && level.getBlockEntity(pos) instanceof NotifierBlockEntity notifier) {
-            notifier.clearAntennaTransmitting();
+        if (!state.is(newState.getBlock()) && !level.isClientSide()) {
+            if (level.getBlockEntity(pos) instanceof NotifierBlockEntity notifier) {
+                notifier.clearAntennaTransmitting();
+            }
+            for (Direction direction : Direction.Plane.HORIZONTAL) {
+                AntennaBlock.refreshLinks(level, pos.relative(direction));
+            }
         }
         super.onRemove(state, level, pos, newState, movedByPiston);
     }

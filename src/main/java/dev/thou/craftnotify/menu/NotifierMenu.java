@@ -27,6 +27,7 @@ public final class NotifierMenu extends AbstractContainerMenu {
     private final int energyStored;
     private final int energyCapacity;
     private final boolean antennaComplete;
+    private final boolean enabled;
     private final GuiPresetCatalog presets;
 
     public NotifierMenu(int containerId, Inventory inventory, NotifierBlockEntity notifier) {
@@ -44,13 +45,14 @@ public final class NotifierMenu extends AbstractContainerMenu {
         this.energyStored = notifier.energyStored();
         this.energyCapacity = notifier.energyCapacity();
         this.antennaComplete = notifier.hasCompleteAntenna();
+        this.enabled = notifier.enabled();
         this.presets = GuiPresetStore.catalog();
     }
 
     private NotifierMenu(int containerId, Inventory inventory, BlockPos blockPos, int revision,
                          String label, String channelId, String titleTemplate, String contentTemplate,
                          int cooldownSeconds, String availableChannels, String statusText,
-                         int energyStored, int energyCapacity, boolean antennaComplete,
+                         int energyStored, int energyCapacity, boolean antennaComplete, boolean enabled,
                          GuiPresetCatalog presets) {
         super(ModMenus.NOTIFIER.get(), containerId);
         this.access = ContainerLevelAccess.NULL;
@@ -66,6 +68,7 @@ public final class NotifierMenu extends AbstractContainerMenu {
         this.energyStored = energyStored;
         this.energyCapacity = energyCapacity;
         this.antennaComplete = antennaComplete;
+        this.enabled = enabled;
         this.presets = presets;
     }
 
@@ -84,6 +87,7 @@ public final class NotifierMenu extends AbstractContainerMenu {
                 buf.readUtf(256),
                 buf.readVarInt(),
                 buf.readVarInt(),
+                buf.readBoolean(),
                 buf.readBoolean(),
                 GuiPresetCatalog.read(buf)
         );
@@ -141,5 +145,6 @@ public final class NotifierMenu extends AbstractContainerMenu {
     public int energyStored() { return energyStored; }
     public int energyCapacity() { return energyCapacity; }
     public boolean antennaComplete() { return antennaComplete; }
+    public boolean enabled() { return enabled; }
     public GuiPresetCatalog presets() { return presets; }
 }

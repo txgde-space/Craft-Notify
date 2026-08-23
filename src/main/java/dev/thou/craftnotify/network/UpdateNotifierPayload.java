@@ -9,7 +9,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 
 public record UpdateNotifierPayload(BlockPos pos, int revision, String label, String channelId,
-                                    String title, String content, int cooldownSeconds)
+                                    String title, String content, int cooldownSeconds, boolean enabled)
         implements CustomPacketPayload {
     public static final Type<UpdateNotifierPayload> TYPE = new Type<>(
             ResourceLocation.fromNamespaceAndPath(CraftNotify.MOD_ID, "update_notifier"));
@@ -25,6 +25,7 @@ public record UpdateNotifierPayload(BlockPos pos, int revision, String label, St
         buf.writeUtf(payload.title, NotifierBlockEntity.MAX_TITLE_LENGTH);
         buf.writeUtf(payload.content, NotifierBlockEntity.MAX_CONTENT_LENGTH);
         buf.writeVarInt(payload.cooldownSeconds);
+        buf.writeBoolean(payload.enabled);
     }
 
     private static UpdateNotifierPayload decode(RegistryFriendlyByteBuf buf) {
@@ -35,7 +36,8 @@ public record UpdateNotifierPayload(BlockPos pos, int revision, String label, St
                 buf.readUtf(NotifierBlockEntity.MAX_CHANNEL_LENGTH),
                 buf.readUtf(NotifierBlockEntity.MAX_TITLE_LENGTH),
                 buf.readUtf(NotifierBlockEntity.MAX_CONTENT_LENGTH),
-                buf.readVarInt()
+                buf.readVarInt(),
+                buf.readBoolean()
         );
     }
 

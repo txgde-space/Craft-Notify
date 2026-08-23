@@ -50,6 +50,45 @@
       "apply": {
         "model": "craft_notify:block/antenna_top_tx"
       }
+    },
+    {
+      "when": {
+        "part": "base",
+        "north": "true"
+      },
+      "apply": {
+        "model": "craft_notify:block/antenna_link"
+      }
+    },
+    {
+      "when": {
+        "part": "base",
+        "east": "true"
+      },
+      "apply": {
+        "model": "craft_notify:block/antenna_link",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "part": "base",
+        "south": "true"
+      },
+      "apply": {
+        "model": "craft_notify:block/antenna_link",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "part": "base",
+        "west": "true"
+      },
+      "apply": {
+        "model": "craft_notify:block/antenna_link",
+        "y": 270
+      }
     }
   ]
 }

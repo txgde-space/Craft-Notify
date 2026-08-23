@@ -1,0 +1,28 @@
+{
+  "textures": {
+    "screen": "craft_notify:block/terminal_screen_on",
+    "led": "craft_notify:block/terminal_led_on",
+    "particle": "craft_notify:block/terminal_screen_on"
+  },
+  "elements": [
+    {
+      "from": [3.1, 6.1, -0.5],
+      "to": [12.9, 12.9, 0.08],
+      "shade": false,
+      "faces": {
+        "north": { "texture": "#screen" }
+      }
+    },
+    {
+      "from": [11.35, 0.85, -0.55],
+      "to": [13.65, 2.05, 0.12],
+      "shade": false,
+      "faces": {
+        "north": { "texture": "#led" },
+        "up": { "texture": "#led" },
+        "west": { "texture": "#led" },
+        "east": { "texture": "#led" }
+      }
+    }
+  ]
+}

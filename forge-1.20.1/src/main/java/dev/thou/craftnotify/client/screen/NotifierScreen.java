@@ -37,9 +37,12 @@ public final class NotifierScreen extends AbstractContainerScreen<NotifierMenu> 
     private DropdownWidget<TerminalPresets.TemplateOption> titleButton;
     private DropdownWidget<TerminalPresets.TemplateOption> messageButton;
     private DropdownWidget<Integer> cooldownButton;
+    private Button enabledButton;
+    private boolean enabled;
 
     public NotifierScreen(NotifierMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
+        this.enabled = menu.enabled();
         imageWidth = 240;
         imageHeight = 186;
         inventoryLabelY = 10000;
@@ -90,6 +93,13 @@ public final class NotifierScreen extends AbstractContainerScreen<NotifierMenu> 
         cooldownButton = dropdown(x, y, width, cooldowns, menu.cooldownSeconds(),
                 TerminalPresets::cooldownLabel,
                 seconds -> Tooltip.create(Component.translatable("screen.craft_notify.dropdown_hint")));
+
+        enabledButton = addRenderableWidget(Button.builder(enabledLabel(), button -> {
+            enabled = !enabled;
+            button.setMessage(enabledLabel());
+            button.setTooltip(Tooltip.create(Component.translatable("screen.craft_notify.enabled_tooltip")));
+        }).bounds(leftPos + 168, topPos + 4, 64, 16).build());
+        enabledButton.setTooltip(Tooltip.create(Component.translatable("screen.craft_notify.enabled_tooltip")));
 
         int buttonY = topPos + 160;
         addRenderableWidget(Button.builder(Component.translatable("screen.craft_notify.save"), button -> save())
@@ -150,7 +160,7 @@ public final class NotifierScreen extends AbstractContainerScreen<NotifierMenu> 
     private void save() {
         ModNetworking.CHANNEL.sendToServer(new UpdateNotifierPayload(
                 menu.blockPos(), menu.revision(), selectedLabel(), selectedChannel(),
-                selectedTitle(), selectedMessage(), cooldownButton.getValue()
+                selectedTitle(), selectedMessage(), cooldownButton.getValue(), enabled
         ));
         onClose();
     }
@@ -263,5 +273,11 @@ public final class NotifierScreen extends AbstractContainerScreen<NotifierMenu> 
 
     private void label(GuiGraphics graphics, String key, int y) {
         graphics.drawString(font, Component.translatable(key), 26, y, 0x404040, false);
+    }
+
+    private Component enabledLabel() {
+        return Component.translatable(enabled
+                ? "screen.craft_notify.enabled_on"
+                : "screen.craft_notify.enabled_off");
     }
 }

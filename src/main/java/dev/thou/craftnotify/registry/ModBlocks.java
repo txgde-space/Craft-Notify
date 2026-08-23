@@ -34,6 +34,9 @@ public final class ModBlocks {
                         if (state.hasProperty(NotifierBlock.POWERED) && state.getValue(NotifierBlock.POWERED)) {
                             return 4;
                         }
+                        if (state.hasProperty(NotifierBlock.ENABLED) && state.getValue(NotifierBlock.ENABLED)) {
+                            return 3;
+                        }
                         if (state.hasProperty(NotifierBlock.ENERGY) && state.getValue(NotifierBlock.ENERGY) >= 3) {
                             return 2;
                         }
@@ -53,8 +56,19 @@ public final class ModBlocks {
                     .sound(SoundType.COPPER)
                     .requiresCorrectToolForDrops()
                     .noOcclusion()
-                    .lightLevel(state -> state.hasProperty(AntennaBlock.TRANSMITTING)
-                            && state.getValue(AntennaBlock.TRANSMITTING) ? 8 : 0)
+                    .lightLevel(state -> {
+                        if (state.hasProperty(AntennaBlock.TRANSMITTING)
+                                && state.getValue(AntennaBlock.TRANSMITTING)) {
+                            return 8;
+                        }
+                        if ((state.hasProperty(AntennaBlock.NORTH) && state.getValue(AntennaBlock.NORTH))
+                                || (state.hasProperty(AntennaBlock.EAST) && state.getValue(AntennaBlock.EAST))
+                                || (state.hasProperty(AntennaBlock.SOUTH) && state.getValue(AntennaBlock.SOUTH))
+                                || (state.hasProperty(AntennaBlock.WEST) && state.getValue(AntennaBlock.WEST))) {
+                            return 3;
+                        }
+                        return 0;
+                    })
     );
 
     public static final DeferredItem<BlockItem> ANTENNA_ITEM =
