@@ -1,6 +1,7 @@
 package dev.thou.craftnotify.registry;
 
 import dev.thou.craftnotify.CraftNotify;
+import dev.thou.craftnotify.blockentity.AntennaBlockEntity;
 import dev.thou.craftnotify.blockentity.NotifierBlockEntity;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -15,6 +16,11 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<NotifierBlockEntity>> NOTIFIER =
             BLOCK_ENTITIES.register("notifier", () -> BlockEntityType.Builder
                     .of(NotifierBlockEntity::new, ModBlocks.NOTIFIER.get())
+                    .build(null));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<AntennaBlockEntity>> ANTENNA =
+            BLOCK_ENTITIES.register("antenna", () -> BlockEntityType.Builder
+                    .of(AntennaBlockEntity::new, ModBlocks.ANTENNA.get())
                     .build(null));
 
     static {

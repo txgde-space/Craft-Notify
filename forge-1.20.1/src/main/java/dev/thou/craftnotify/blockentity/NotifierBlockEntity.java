@@ -107,6 +107,7 @@ public final class NotifierBlockEntity extends BlockEntity implements MenuProvid
 
     public void onAntennaChanged() {
         invalidateAntennaCache();
+        refreshNearbyAntennaDeploy();
         refreshReadyStatus();
         if (status == NotificationStatus.SENDING && sendAnimStart >= 0 && level != null) {
             setAntennaCharge(chargeLitForElapsed(level.getGameTime() - sendAnimStart));
@@ -119,6 +120,7 @@ public final class NotifierBlockEntity extends BlockEntity implements MenuProvid
         invalidateAntennaCache();
         if (level instanceof ServerLevel serverLevel) {
             NotifierBlock.refreshLinks(serverLevel, worldPosition);
+            refreshNearbyAntennaDeploy();
             syncVisualState();
             if (shouldKeepTicking()) {
                 serverLevel.scheduleTick(worldPosition, getBlockState().getBlock(), 1);
@@ -132,6 +134,7 @@ public final class NotifierBlockEntity extends BlockEntity implements MenuProvid
         }
         int band = energyBand(energy);
         applyEnergyBand(band);
+        refreshNearbyAntennaDeploy();
         long now = serverLevel.getGameTime();
         if (now - lastEnergySaveTick >= 20L) {
             lastEnergySaveTick = now;
@@ -698,6 +701,18 @@ public final class NotifierBlockEntity extends BlockEntity implements MenuProvid
     public int energyCapacity() { return ENERGY_CAPACITY; }
     public TerminalEnergyStorage energyStorage() { return energyStorage; }
     public boolean enabled() { return enabled; }
+
+    private void refreshNearbyAntennaDeploy() {
+        if (level == null || level.isClientSide()) {
+            return;
+        }
+        for (var direction : net.minecraft.core.Direction.Plane.HORIZONTAL) {
+            BlockPos pos = worldPosition.relative(direction);
+            if (level.getBlockEntity(pos) instanceof AntennaBlockEntity antenna) {
+                antenna.refreshDeploy();
+            }
+        }
+    }
 
     private void applyEnabledState() {
         if (!(level instanceof ServerLevel serverLevel)) {

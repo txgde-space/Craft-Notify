@@ -1,6 +1,7 @@
 package dev.thou.craftnotify.registry;
 
 import dev.thou.craftnotify.CraftNotify;
+import dev.thou.craftnotify.blockentity.AntennaBlockEntity;
 import dev.thou.craftnotify.blockentity.NotifierBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -15,6 +16,11 @@ public final class ModBlockEntities {
     public static final RegistryObject<BlockEntityType<NotifierBlockEntity>> NOTIFIER =
             BLOCK_ENTITIES.register("notifier", () -> BlockEntityType.Builder
                     .of(NotifierBlockEntity::new, ModBlocks.NOTIFIER.get())
+                    .build(null));
+
+    public static final RegistryObject<BlockEntityType<AntennaBlockEntity>> ANTENNA =
+            BLOCK_ENTITIES.register("antenna", () -> BlockEntityType.Builder
+                    .of(AntennaBlockEntity::new, ModBlocks.ANTENNA.get())
                     .build(null));
 
     private ModBlockEntities() {

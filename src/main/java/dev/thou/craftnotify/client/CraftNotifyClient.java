@@ -23,5 +23,11 @@ public final class CraftNotifyClient {
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(ModBlockEntities.NOTIFIER.get(), NotifierTransmitRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.ANTENNA.get(), AntennaArmRenderer::new);
+    }
+
+    @SubscribeEvent
+    public static void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
+        event.registerLayerDefinition(AntennaArmRenderer.LAYER, AntennaArmRenderer::createLayer);
     }
 }

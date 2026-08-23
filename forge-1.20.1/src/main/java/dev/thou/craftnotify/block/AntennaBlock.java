@@ -1,7 +1,9 @@
 package dev.thou.craftnotify.block;
 
-import dev.thou.craftnotify.registry.ModBlocks;
+import dev.thou.craftnotify.blockentity.AntennaBlockEntity;
 import dev.thou.craftnotify.blockentity.NotifierBlockEntity;
+import dev.thou.craftnotify.registry.ModBlockEntities;
+import dev.thou.craftnotify.registry.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
@@ -12,7 +14,11 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -23,9 +29,10 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
-public final class AntennaBlock extends Block {
+public final class AntennaBlock extends Block implements EntityBlock {
     public static final EnumProperty<AntennaPart> PART = EnumProperty.create("part", AntennaPart.class);
     public static final BooleanProperty TRANSMITTING = BooleanProperty.create("transmitting");
+    public static final BooleanProperty EXTENDED = BooleanProperty.create("extended");
     public static final BooleanProperty NORTH = BlockStateProperties.NORTH;
     public static final BooleanProperty EAST = BlockStateProperties.EAST;
     public static final BooleanProperty SOUTH = BlockStateProperties.SOUTH;
@@ -36,16 +43,20 @@ public final class AntennaBlock extends Block {
             box(5.5, 3, 5.5, 10.5, 11, 10.5),
             box(6.5, 11, 6.5, 9.5, 16, 9.5)
     );
-    private static final VoxelShape MIDDLE_SHAPE = Shapes.or(
-            box(6.5, 0, 6.5, 9.5, 16, 9.5),
+    private static final VoxelShape MIDDLE_RETRACTED = box(6.5, 0, 6.5, 9.5, 16, 9.5);
+    private static final VoxelShape MIDDLE_EXTENDED = Shapes.or(
+            MIDDLE_RETRACTED,
             box(1, 7.2, 7, 15, 8.8, 9),
             box(7, 7.2, 1, 9, 8.8, 15)
     );
-    private static final VoxelShape TOP_SHAPE = Shapes.or(
+    private static final VoxelShape TOP_RETRACTED = Shapes.or(
             box(6.5, 0, 6.5, 9.5, 9, 9.5),
-            box(0.5, 8, 7, 15.5, 10, 9),
-            box(7, 8, 0.5, 9, 10, 15.5),
             box(6, 9.5, 6, 10, 16, 10)
+    );
+    private static final VoxelShape TOP_EXTENDED = Shapes.or(
+            TOP_RETRACTED,
+            box(0.5, 8, 7, 15.5, 10, 9),
+            box(7, 8, 0.5, 9, 10, 15.5)
     );
 
     public AntennaBlock(Properties properties) {
@@ -53,6 +64,7 @@ public final class AntennaBlock extends Block {
         registerDefaultState(stateDefinition.any()
                 .setValue(PART, AntennaPart.BASE)
                 .setValue(TRANSMITTING, false)
+                .setValue(EXTENDED, false)
                 .setValue(NORTH, false)
                 .setValue(EAST, false)
                 .setValue(SOUTH, false)
@@ -61,7 +73,7 @@ public final class AntennaBlock extends Block {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(PART, TRANSMITTING, NORTH, EAST, SOUTH, WEST);
+        builder.add(PART, TRANSMITTING, EXTENDED, NORTH, EAST, SOUTH, WEST);
     }
 
     @Nullable
@@ -97,6 +109,9 @@ public final class AntennaBlock extends Block {
         if (next != state) {
             level.setBlock(pos, next, 3);
         }
+        if (level.getBlockEntity(pos) instanceof AntennaBlockEntity antenna) {
+            antenna.refreshDeploy();
+        }
     }
 
     private static boolean isNotifier(LevelAccessor level, BlockPos pos) {
@@ -111,6 +126,9 @@ public final class AntennaBlock extends Block {
             level.setBlock(pos.above(), defaultBlockState().setValue(PART, AntennaPart.MIDDLE), 3);
             level.setBlock(pos.above(2), defaultBlockState().setValue(PART, AntennaPart.TOP), 3);
             notifyNearbyTerminals(level, pos);
+            if (level.getBlockEntity(pos) instanceof AntennaBlockEntity antenna) {
+                antenna.refreshDeploy();
+            }
         }
     }
 
@@ -164,11 +182,30 @@ public final class AntennaBlock extends Block {
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        boolean extended = state.hasProperty(EXTENDED) && state.getValue(EXTENDED);
         return switch (state.getValue(PART)) {
             case BASE -> BASE_SHAPE;
-            case MIDDLE -> MIDDLE_SHAPE;
-            case TOP -> TOP_SHAPE;
+            case MIDDLE -> extended ? MIDDLE_EXTENDED : MIDDLE_RETRACTED;
+            case TOP -> extended ? TOP_EXTENDED : TOP_RETRACTED;
         };
+    }
+
+    @Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return state.getValue(PART) == AntennaPart.BASE ? new AntennaBlockEntity(pos, state) : null;
+    }
+
+    @Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state,
+                                                                  BlockEntityType<T> type) {
+        if (level.isClientSide() || state.getValue(PART) != AntennaPart.BASE) {
+            return null;
+        }
+        return type == ModBlockEntities.ANTENNA.get()
+                ? (lvl, pos, st, be) -> AntennaBlockEntity.serverTick(lvl, pos, st, (AntennaBlockEntity) be)
+                : null;
     }
 
     @Override

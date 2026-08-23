@@ -1,0 +1,33 @@
+{
+  "textures": {
+    "copper": "craft_notify:block/terminal_copper",
+    "coil": "craft_notify:block/antenna_coil",
+    "particle": "craft_notify:block/terminal_copper"
+  },
+  "elements": [
+    {
+      "from": [7.05, 7.2, 9.5],
+      "to": [8.95, 8.8, 14.7],
+      "faces": {
+        "down": { "texture": "#copper" },
+        "up": { "texture": "#copper" },
+        "north": { "texture": "#copper" },
+        "south": { "texture": "#copper" },
+        "west": { "texture": "#copper" },
+        "east": { "texture": "#copper" }
+      }
+    },
+    {
+      "from": [6.8, 6.85, 14.3],
+      "to": [9.2, 9.15, 16],
+      "faces": {
+        "down": { "texture": "#coil" },
+        "up": { "texture": "#coil" },
+        "north": { "texture": "#coil" },
+        "south": { "texture": "#coil" },
+        "west": { "texture": "#coil" },
+        "east": { "texture": "#coil" }
+      }
+    }
+  ]
+}
